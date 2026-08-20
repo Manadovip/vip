@@ -76,8 +76,8 @@ const FREE_FOLDER_IDS = [
 
 ];
 const FACEBOOK_USERNAME = 'firaafriliaaaa';
-const QRIS_IMAGE_URL = 'https://layarbiru.xyz/qris.jpg';
-const QRIS_ALL_ACCESS_IMAGE_URL = 'https://layarbiru.xyz/qris-all.png';
+const QRIS_IMAGE_URL = 'qris.png';
+const QRIS_ALL_ACCESS_IMAGE_URL = 'qris.png';
 const BANK_TRANSFER_INFO = 'Scan QR di atas menggunakan aplikasi m-banking atau e-wallet kamu untuk membayar.';
 
 // Notifikasi Telegram sekarang lewat proxy server-side (telegram-notify-proxy.php).
