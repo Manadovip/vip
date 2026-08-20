@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pembayaran – Manado VIP</title>
+<meta name="description" content="Halaman pembayaran akses video premium Manado VIP.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="https://layarbiru.xyz/logo.png">
+
+<style>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --bg:          #0b1310;
+  --bg-elev:     #121e19;
+  --bg-elev2:    #172119;
+  --bg-card:     #1a2820;
+  --line:        #24352e;
+  --line-hi:     #2e4438;
+  --text:        #eef2ee;
+  --text-dim:    #9db0a6;
+  --text-muted:  #5e7a6e;
+  --amber:       #FFB800;
+  --amber-hi:    #FFD44D;
+  --amber-dim:   #8A6500;
+  --amber-glow:  rgba(255,184,0,0.12);
+  --amber-grad:  linear-gradient(135deg, #FFD44D 0%, #FFB800 55%, #CC9200 100%);
+  --green:       #3dbf7e;
+  --green-glow:  rgba(61,191,126,0.12);
+  --red:         #e05555;
+  --red-glow:    rgba(224,85,85,0.10);
+  --blue:        #5090e8;
+  --radius-sm:   8px;
+  --radius-md:   14px;
+  --radius-lg:   20px;
+  --shadow:      0 4px 24px rgba(0,0,0,0.4);
+  --shadow-card: 0 1px 0 rgba(255,255,255,0.03) inset, 0 12px 32px -16px rgba(0,0,0,0.55);
+  --shadow-btn:  0 8px 20px -8px rgba(255,184,0,0.45);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  background:
+    radial-gradient(circle at 50% -10%, rgba(255,184,0,0.07), transparent 45%),
+    var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+.pay-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  background: rgba(11,19,16,0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 8px 24px -18px rgba(0,0,0,0.6);
+  z-index: 100;
+}
+
+.pay-brand {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  text-decoration: none;
+}
+.pay-brand img { width: 26px; height: 26px; border-radius: 7px; box-shadow: 0 0 0 1px var(--line); }
+.pay-brand em  {
+  color: #0c1512;
+  font-style: normal;
+  background: var(--amber-grad);
+  padding: 1px 7px;
+  border-radius: 5px;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+
+.pay-nav-back {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-dim);
+  text-decoration: none;
+  border: 1px solid var(--line);
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: color .15s, border-color .15s;
+}
+.pay-nav-back:hover { color: var(--amber); border-color: var(--amber-dim); }
+.pay-nav-back svg  { flex-shrink: 0; }
+
+/* ============================================================
+   PROGRESS STEPS
+   ============================================================ */
+.pay-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 20px 24px 0;
+  max-width: 560px;
+  margin: 0 auto;
+  width: 100%;
+}
+.pay-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  position: relative;
+}
+.pay-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: calc(50% + 14px);
+  right: calc(-50% + 14px);
+  height: 1px;
+  background: var(--line);
+  transition: background .3s;
+}
+.pay-step.done:not(:last-child)::after { background: var(--green); }
+.pay-step-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  background: var(--bg-elev);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--text-muted);
+  transition: all .3s;
+  flex-shrink: 0;
+}
+.pay-step.active .pay-step-dot {
+  border-color: var(--amber);
+  background: var(--amber-glow);
+  color: var(--amber);
+  box-shadow: 0 0 0 4px rgba(255,184,0,0.10);
+}
+.pay-step.done .pay-step-dot {
+  border-color: var(--green);
+  background: var(--green-glow);
+  color: var(--green);
+}
+.pay-step-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+}
+.pay-step.active .pay-step-label { color: var(--amber); }
+.pay-step.done .pay-step-label   { color: var(--green); }
+
+/* ============================================================
+   MAIN LAYOUT
+   ============================================================ */
+.pay-main {
+  flex: 1;
+  max-width: 560px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+/* ============================================================
+   PANELS (satu per step)
+   ============================================================ */
+.pay-panel {
+  display: none;
+  animation: fadeUp .25s ease both;
+}
+.pay-panel.active { display: block; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   ORDER SUMMARY CARD
+   ============================================================ */
+.order-card {
+  position: relative;
+  background: var(--bg-elev);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+.order-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--amber-grad);
+}
+.order-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.order-card-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-family: 'Space Grotesk', sans-serif;
+}
+.order-secure-tag {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  color: var(--text-muted);
+  letter-spacing: 0.01em;
+}
+.order-secure-tag svg { color: var(--green); flex-shrink: 0; }
+.order-folder-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--bg-elev2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+}
+.order-folder-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--amber-glow);
+  border: 1px solid var(--amber-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--amber);
+  flex-shrink: 0;
+}
+.order-folder-info { flex: 1; min-width: 0; }
+.order-folder-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.order-folder-sub {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.order-divider {
+  height: 1px;
+  background: repeating-linear-gradient(90deg, var(--line) 0 6px, transparent 6px 12px);
+  margin: 16px 0;
+}
+.order-total-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+}
+.order-total-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.order-total-label > span:first-child {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.order-total-note {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--green);
+}
+.order-total-note svg { flex-shrink: 0; }
+.order-total-value {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 26px;
+  letter-spacing: -0.02em;
+  color: var(--amber-hi);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* ============================================================
+   SECTION LABEL
+   ============================================================ */
+.section-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  margin-top: 20px;
+}
+
+/* ============================================================
+   SECTION LABEL ROW (label + badge maintenance)
+   ============================================================ */
+.section-label-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+.section-label-row .section-label {
+  margin: 0;
+}
+
+/* ============================================================
+   DIVIDER "atau"
+   ============================================================ */
+.pay-or-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0 10px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.pay-or-divider::before,
+.pay-or-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+/* ============================================================
+   QRIS MANUAL CARD
+   ============================================================ */
+.qris-card {
+  background: var(--bg-elev);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color .15s, box-shadow .15s;
+}
+.qris-card.selected { box-shadow: var(--shadow-card); }
+.pay-method-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.qris-card:hover { border-color: var(--amber-dim); }
+.qris-card.selected { border-color: var(--amber); background: var(--amber-glow); }
+
+.qris-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 14px;
+}
+.qris-card-icon {
+  width: 40px;
+  height: 28px;
+  background: var(--bg-elev2);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.qris-card-title {
+  flex: 1;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text);
+}
+.qris-card-sub {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.qris-reveal {
+  display: none;
+  padding: 0 14px 16px;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.qris-card.selected .qris-reveal { display: flex; }
+
+.qris-img {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: #fff;
+  padding: 8px;
+}
+.qris-hint {
+  font-size: 12px;
+  color: var(--text-dim);
+  text-align: center;
+  line-height: 1.6;
+  padding: 10px 12px;
+  background: var(--bg-elev2);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  width: 100%;
+}
+
+.dana-number-box {
+  width: 100%;
+  background: var(--bg-elev2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+}
+.dana-number-label {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+.dana-number-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.dana-number-value {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: 0.03em;
+  color: var(--text);
+}
+.dana-copy-btn {
+  flex-shrink: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  padding: 7px 13px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--amber-dim);
+  background: var(--amber-glow);
+  color: var(--amber);
+  cursor: pointer;
+  transition: opacity .15s;
+}
+.dana-copy-btn:hover { opacity: .85; }
+
+/* ============================================================
+   PROOF UPLOAD
+   ============================================================ */
+.proof-upload-area {
+  margin-top: 16px;
+  border: 1.5px dashed var(--line-hi);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.proof-upload-area:hover {
+  border-color: var(--amber-dim);
+  background: var(--amber-glow);
+}
+.proof-upload-area.has-file {
+  border-color: var(--green);
+  background: var(--green-glow);
+  border-style: solid;
+}
+.proof-upload-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg-elev2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+.proof-upload-area.has-file .proof-upload-icon {
+  background: var(--green-glow);
+  color: var(--green);
+}
+.proof-upload-label {
+  font-size: 13px;
+  color: var(--text-dim);
+  text-align: center;
+}
+.proof-upload-label strong { color: var(--text); }
+.proof-upload-sublabel {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* ============================================================
+   PRIMARY BUTTON
+   ============================================================ */
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 20px;
+  background: var(--amber-grad);
+  color: #000000;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  box-shadow: var(--shadow-btn);
+  transition: transform .15s, box-shadow .15s, opacity .15s;
+  margin-top: 16px;
+  letter-spacing: 0.01em;
+}
+.btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 12px 26px -8px rgba(255,184,0,0.55); }
+.btn-primary:active:not(:disabled) { transform: translateY(0) scale(.98); }
+.btn-primary:disabled {
+  opacity: .35;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   STATUS MESSAGE
+   ============================================================ */
+.status-msg {
+  display: none;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  line-height: 1.5;
+  margin-top: 12px;
+}
+.status-msg.visible { display: flex; }
+.status-msg.pending {
+  background: rgba(255,184,0,0.10);
+  border: 1px solid var(--amber-dim);
+  color: var(--amber);
+}
+.status-msg.success {
+  background: var(--green-glow);
+  border: 1px solid rgba(61,191,126,0.25);
+  color: var(--green);
+}
+.status-msg.error {
+  background: var(--red-glow);
+  border: 1px solid rgba(224,85,85,0.25);
+  color: var(--red);
+}
+.status-msg svg { flex-shrink: 0; margin-top: 1px; }
+
+/* ============================================================
+   STEP 2: DETAIL TRANSFER (status pengajuan manual)
+   ============================================================ */
+.payresult-card {
+  position: relative;
+  background: var(--bg-elev);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-card);
+}
+.payresult-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--amber-grad);
+}
+.payresult-top {
+  padding: 16px 18px;
+  background: var(--amber-glow);
+  border-bottom: 1px solid var(--amber-dim);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.payresult-top-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--amber);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0c1512;
+  flex-shrink: 0;
+}
+.payresult-top-text { flex: 1; }
+.payresult-top-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--amber);
+}
+.payresult-top-sub {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 1px;
+}
+.payresult-body {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.payresult-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.payresult-row-label {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.payresult-row-val {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text);
+  text-align: right;
+}
+
+/* ============================================================
+   STEP 3: SUKSES
+   ============================================================ */
+.success-screen {
+  text-align: center;
+  padding: 32px 16px 0;
+}
+.success-anim {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--green-glow);
+  border: 2px solid var(--green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  box-shadow: 0 0 0 8px rgba(61,191,126,0.06);
+  animation: popIn .4s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popIn {
+  from { transform: scale(0.4); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+.success-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+.success-sub {
+  font-size: 14px;
+  color: var(--text-dim);
+  line-height: 1.6;
+  max-width: 320px;
+  margin: 0 auto 28px;
+}
+.btn-back-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: var(--bg-elev);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.btn-back-home:hover {
+  border-color: var(--amber-dim);
+  background: var(--amber-glow);
+  color: var(--amber);
+}
+
+/* ============================================================
+   LOADING SKELETON
+   ============================================================ */
+.skel-line {
+  height: 14px;
+  border-radius: 7px;
+  background: linear-gradient(90deg, var(--bg-elev) 25%, var(--line) 50%, var(--bg-elev) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  margin-bottom: 8px;
+}
+@keyframes shimmer {
+  from { background-position: 200% center; }
+  to   { background-position: -200% center; }
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.pay-footer {
+  text-align: center;
+  padding: 20px 24px 28px;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.pay-footer-trust {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--text-dim);
+  font-size: 11.5px;
+  margin-bottom: 10px;
+}
+.pay-footer-trust svg { color: var(--green); flex-shrink: 0; }
+.pay-footer a {
+  color: var(--amber);
+  text-decoration: none;
+  margin: 0 6px;
+}
+.pay-footer a:hover { text-decoration: underline; }
+
+/* ============================================================
+   PLAN SELECTOR — redesign premium (horizontal cards)
+   ============================================================ */
+.plan-section-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+.plan-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.plan-card {
+  position: relative;
+  background: var(--bg-elev);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 16px 14px 18px;
+  cursor: pointer;
+  transition: border-color .2s, background .2s, box-shadow .2s, transform .15s;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  overflow: hidden;
+  text-align: left;
+  min-height: 120px;
+}
+.plan-card:hover {
+  border-color: var(--amber-dim);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -8px rgba(0,0,0,0.4);
+}
+.plan-card.selected {
+  border-color: var(--amber);
+  background: linear-gradient(145deg, rgba(255,184,0,0.10) 0%, rgba(255,184,0,0.04) 100%);
+  box-shadow: 0 0 0 3px rgba(255,184,0,0.10), 0 8px 24px -8px rgba(255,184,0,0.20);
+  transform: translateY(-2px);
+}
+.plan-card.selected::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2.5px;
+  background: var(--amber-grad);
+}
+
+/* Icon bulat di atas */
+.plan-card-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-elev2);
+  border: 1px solid var(--line-hi);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  color: var(--text-dim);
+  flex-shrink: 0;
+  transition: background .2s, border-color .2s, color .2s;
+}
+.plan-card.selected .plan-card-icon {
+  background: var(--amber-glow);
+  border-color: var(--amber-dim);
+  color: var(--amber);
+}
+
+.plan-card-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 3px;
+}
+.plan-card.selected .plan-card-name { color: var(--amber-hi); }
+
+.plan-card-desc {
+  font-size: 10.5px;
+  color: var(--text-muted);
+  line-height: 1.45;
+  flex: 1;
+}
+
+.plan-card-price {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 800;
+  font-size: 20px;
+  color: var(--text);
+  letter-spacing: -0.03em;
+  margin-top: 10px;
+  white-space: nowrap;
+  line-height: 1;
+}
+.plan-card.selected .plan-card-price { color: var(--amber-hi); }
+
+.plan-card-price-sub {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 400;
+  letter-spacing: 0;
+  margin-top: 3px;
+}
+
+/* Badge "TERBAIK" di pojok kanan atas */
+.plan-top-badge {
+  position: absolute;
+  top: 8px; right: 8px;
+  background: var(--amber-grad);
+  color: #000000;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: 20px;
+  line-height: 1.4;
+  box-shadow: 0 2px 8px -2px rgba(255,184,0,0.5);
+}
+
+/* Checkmark pojok kiri bawah saat selected */
+.plan-card-check {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--amber);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity .2s, transform .25s cubic-bezier(.34,1.56,.64,1);
+}
+.plan-card.selected .plan-card-check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 400px) {
+  .pay-nav { padding: 12px 14px; }
+  .pay-main { padding: 18px 12px 40px; }
+  .order-card { padding: 16px; }
+}
+
+/* ============================================================
+   SPINNER
+   ============================================================ */
+.spin {
+  display: inline-block;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="pay-nav">
+  <a class="pay-brand" href="/">
+    <img src="https://layarbiru.xyz/logo.png" alt="Logo Manado VIP" onerror="this.style.display='none'">
+    Manado<em>Vip</em>
+  </a>
+  <a class="pay-nav-back" href="/">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    Kembali
+  </a>
+</nav>
+
+<!-- PROGRESS STEPS -->
+<div class="pay-progress" id="payProgress">
+  <div class="pay-step active" id="stepPilih">
+    <div class="pay-step-dot" id="dotPilih">1</div>
+    <div class="pay-step-label">Pilih Metode</div>
+  </div>
+  <div class="pay-step" id="stepBayar">
+    <div class="pay-step-dot" id="dotBayar">2</div>
+    <div class="pay-step-label">Bayar</div>
+  </div>
+  <div class="pay-step" id="stepSelesai">
+    <div class="pay-step-dot" id="dotSelesai">3</div>
+    <div class="pay-step-label">Selesai</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main class="pay-main">
+
+  <!-- ======================================================
+       PANEL 1: PILIH METODE
+       ====================================================== -->
+  <div class="pay-panel active" id="panel1">
+
+    <!-- Plan Selector -->
+    <div class="plan-section-label" id="planSectionLabel">Pilih Paket</div>
+    <div class="plan-selector" id="planSelector">
+
+      <!-- Kartu: 1 Bulan -->
+      <div class="plan-card selected" id="planCardMonthly" onclick="selectPlan('monthly')">
+        <div class="plan-card-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div class="plan-card-name">1 Bulan</div>
+        <div class="plan-card-desc">Akses penuh selama 30 hari</div>
+        <div class="plan-card-price" id="planPriceMonthly">–</div>
+        <div class="plan-card-price-sub">30 hari akses</div>
+        <div class="plan-card-check">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+      </div>
+
+      <!-- Kartu: Permanen -->
+      <div class="plan-card" id="planCardPermanent" onclick="selectPlan('permanent')">
+        <div class="plan-top-badge">TERBAIK</div>
+        <div class="plan-card-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div class="plan-card-name">Permanen</div>
+        <div class="plan-card-desc">Bayar sekali, akses selamanya tanpa batas waktu</div>
+        <div class="plan-card-price" id="planPricePermanent">–</div>
+        <div class="plan-card-price-sub">sekali bayar</div>
+        <div class="plan-card-check">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Order Summary -->
+    <div class="order-card" id="orderCard">
+      <div class="order-card-header">
+        <span class="order-card-eyebrow">Ringkasan Pesanan</span>
+        <span class="order-secure-tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Transaksi Aman
+        </span>
+      </div>
+      <div class="order-folder-row">
+        <div class="order-folder-icon">VIP</div>
+        <div class="order-folder-info">
+          <div class="order-folder-name" id="folderNameDisplay">Memuat...</div>
+          <div class="order-folder-sub" id="folderSubDisplay">Video eksklusif Manado VIP</div>
+        </div>
+      </div>
+      <div class="order-divider"></div>
+      <div class="order-total-row">
+        <div class="order-total-label">
+          <span>Total Pembayaran</span>
+          <span class="order-total-note" id="orderTotalNote">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Akses 30 hari penuh
+          </span>
+        </div>
+        <div class="order-total-value" id="priceChip">Memuat...</div>
+      </div>
+    </div>
+
+    <!-- Bayar Manual -->
+    <div id="manualSection">
+      <div class="section-label">Pilih Metode Pembayaran</div>
+
+      <div class="pay-method-list">
+        <!-- QRIS -->
+        <div class="qris-card" id="qrisCard">
+          <div class="qris-card-header" onclick="selectMethod('qris')">
+            <div class="qris-card-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="4" height="4" rx="0.5"/><rect x="19" y="19" width="2" height="2" rx="0.5"/></svg>
+            </div>
+            <div>
+              <div class="qris-card-title">QRIS Statis</div>
+              <div class="qris-card-sub">Semua e-wallet & m-banking</div>
+            </div>
+          </div>
+          <div class="qris-reveal" id="qrisReveal">
+            <img class="qris-img" id="qrisImg" src="" alt="QRIS Payment">
+            <div class="qris-hint" id="qrisHint">Scan QR di atas menggunakan aplikasi m-banking atau e-wallet kamu untuk membayar, lalu upload bukti transfer di bawah.</div>
+          </div>
+        </div>
+
+        <!-- DANA -->
+        <div class="qris-card" id="danaCard">
+          <div class="qris-card-header" onclick="selectMethod('dana')">
+            <div class="qris-card-icon" style="background:#118ee9;color:#fff;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            </div>
+            <div>
+              <div class="qris-card-title">DANA</div>
+              <div class="qris-card-sub">Transfer manual ke nomor DANA</div>
+            </div>
+          </div>
+          <div class="qris-reveal" id="danaReveal">
+            <div class="dana-number-box">
+              <div class="dana-number-label">Nomor DANA Tujuan</div>
+              <div class="dana-number-row">
+                <span class="dana-number-value" id="danaNumberText">089691398271</span>
+                <button type="button" class="dana-copy-btn" id="danaCopyBtn" onclick="copyDanaNumber()">Salin</button>
+              </div>
+            </div>
+            <div class="qris-hint">Transfer sejumlah <strong id="danaAmountHint">–</strong> ke nomor DANA di atas, lalu upload bukti transfer di bawah.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upload Bukti (dipakai bersama, muncul setelah pilih metode) -->
+      <div id="proofUploadWrap" style="display:none;">
+        <div class="section-label" style="width:100%;">Upload Bukti Transfer</div>
+        <div class="proof-upload-area" id="proofUploadArea" onclick="document.getElementById('proofFileInputNew').click()">
+          <div class="proof-upload-icon" id="proofUploadIcon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </div>
+          <div class="proof-upload-label" id="proofUploadLabel">
+            <strong>Pilih foto bukti transfer</strong>
+          </div>
+          <div class="proof-upload-sublabel" id="proofUploadSublabel">JPG / PNG / HEIC · Maks 5 MB</div>
+        </div>
+        <input type="file" id="proofFileInputNew" accept="image/*" style="display:none;">
+
+        <button class="btn-primary" id="btnAjukanAkses" disabled style="margin-top:12px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          Ajukan Akses
+        </button>
+      </div>
+    </div>
+
+    <div class="status-msg" id="statusMsg1">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span id="statusMsg1Text"></span>
+    </div>
+  </div>
+
+  <!-- ======================================================
+       PANEL 2: BAYAR (status pengajuan manual)
+       ====================================================== -->
+  <div class="pay-panel" id="panel2">
+    <div class="payresult-card" id="payResultCard">
+      <div class="payresult-top">
+        <div class="payresult-top-icon">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="payresult-top-text">
+          <div class="payresult-top-title" id="p2TopTitle">Bukti Transfer Terkirim</div>
+          <div class="payresult-top-sub" id="p2TopSub">Menunggu konfirmasi admin</div>
+        </div>
+      </div>
+      <div class="payresult-body">
+        <div class="payresult-row">
+          <span class="payresult-row-label">Folder</span>
+          <span class="payresult-row-val" id="p2FolderName">–</span>
+        </div>
+        <div class="payresult-row">
+          <span class="payresult-row-label">Metode</span>
+          <span class="payresult-row-val" id="p2Method">–</span>
+        </div>
+        <div class="payresult-row">
+          <span class="payresult-row-label">Total Bayar</span>
+          <span class="payresult-row-val" style="color:var(--amber);" id="p2Price">–</span>
+        </div>
+        <div class="payresult-row">
+          <span class="payresult-row-label" id="p2RefLabel">Status</span>
+          <span class="payresult-row-val" id="p2Ref" style="font-size:11px;letter-spacing:0.04em;">–</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="status-msg visible pending" id="statusMsg2" style="margin-top:16px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span id="statusMsg2Text">Bukti transfer kamu sudah diterima. Admin akan meninjau dan mengaktifkan akses secara manual.</span>
+    </div>
+
+    <button class="btn-primary" id="btnCekStatus" style="background:var(--bg-elev);color:var(--text);border:1px solid var(--line);box-shadow:none;margin-top:12px;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.49-4.5"/></svg>
+      Cek Status Pembayaran
+    </button>
+  </div>
+
+  <!-- ======================================================
+       PANEL 3: SELESAI
+       ====================================================== -->
+  <div class="pay-panel" id="panel3">
+    <div class="success-screen">
+      <div class="success-anim">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="success-title">Pembayaran Berhasil!</div>
+      <div class="success-sub" id="successMsg">Akses kamu sudah aktif. Kamu bisa langsung menonton semua video di folder ini.</div>
+      <a class="btn-back-home" href="/">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Kembali & Tonton Sekarang
+      </a>
+    </div>
+  </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="pay-footer">
+  <div class="pay-footer-trust">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    Halaman pembayaran terenkripsi &middot; data kamu tidak dibagikan ke pihak lain
+  </div>
+  <a href="/#syarat">Syarat &amp; Ketentuan</a>
+  &middot;
+  <a href="/#kontak">Kontak &amp; CS</a>
+  &middot;
+  <span>Manado VIP &copy; 2025</span>
+</footer>
+
+<!-- ============================================================
+     SCRIPTS
+     ============================================================ -->
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+/* ============================================================
+   KONFIGURASI — harus sama dengan core.js
+   ============================================================ */
+const CFG = {
+  supabaseUrl:  'https://dwahqcqbytpczvgbzunm.supabase.co',
+  supabaseKey:  'sb_publishable_jQ7V9lI2DcT3oSrpj0XpGw_6r7YwPHF',
+  proofBucket:  'payment-proofs',
+  qrisImageUrl: 'https://layarbiru.xyz/qris.jpg',
+  qrisAllAccessUrl: 'https://layarbiru.xyz/qris-all.png',
+  bankInfo:     'Scan QR di atas menggunakan aplikasi m-banking atau e-wallet kamu untuk membayar.',
+  danaNumber:   '089691398271',
+  allAccessId:  '__ALL_ACCESS__',
+  allAccessName:'Akses Semua Folder',
+  defaultPrice: 15000,
+  allAccessDefaultPrice: 100000,
+  // Token bot TIDAK lagi disimpan di sini — notifikasi lewat proxy server-side.
+  telegramProxyUrl: 'https://dwahqcqbytpczvgbzunm.supabase.co/functions/v1/telegram-notify',
+};
+
+/* ============================================================
+   STATE
+   ============================================================ */
+let sb = null;
+let ctx = {
+  visitorName: '',
+
+  folderId:    '',
+  folderName:  '',
+  price:       0,
+  isAllAccess: false
+};
+let selectedProofFile = null;
+let selectedMethod = ''; // 'qris' atau 'dana'
+let selectedPlan = 'monthly'; // 'monthly' | 'permanent'
+let pollTimer = null;
+let submissionLocked = false; // true kalau sudah ada pengajuan (pending/approved) — cegah kirim bukti dobel
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+function getCookie(name){
+  const m = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+  return m ? decodeURIComponent(m.pop()) : '';
+}
+
+function getParam(key){
+  return new URLSearchParams(window.location.search).get(key) || '';
+}
+
+function fmt(n){
+  return 'Rp ' + Number(n).toLocaleString('id-ID');
+}
+
+function requestKey(name, folderId){
+  return name.trim().toLowerCase() + '__' + folderId;
+}
+
+function showStatus(panelId, type, msg){
+  const el = document.getElementById('statusMsg' + panelId);
+  const tx = document.getElementById('statusMsg' + panelId + 'Text');
+  if(!el) return;
+  el.className = 'status-msg visible ' + type;
+  if(tx) tx.textContent = msg;
+}
+function hideStatus(panelId){
+  const el = document.getElementById('statusMsg' + panelId);
+  if(el) el.className = 'status-msg';
+}
+
+// Panel 2 ("Bayar") menampilkan status pengajuan pembayaran manual
+// (upload bukti transfer).
+function setPanel2Manual(){
+  document.getElementById('p2TopTitle').textContent = 'Bukti Transfer Terkirim';
+  document.getElementById('p2TopSub').textContent = 'Menunggu konfirmasi admin';
+  document.getElementById('p2RefLabel').textContent = 'Status';
+  document.getElementById('p2Ref').textContent = 'Menunggu review admin';
+  showStatus(2, 'pending', 'Bukti transfer kamu sudah diterima. Admin akan meninjau dan mengaktifkan akses secara manual — biasanya tidak lama.');
+}
+function goToManualPendingStep(methodLabel){
+  const activePrice = selectedPlan === 'monthly' ? ctx.price : ctx.permanentPrice;
+  document.getElementById('p2FolderName').textContent = ctx.folderName || 'Folder VIP';
+  document.getElementById('p2Method').textContent = methodLabel || (selectedMethod === 'dana' ? 'Transfer Manual (DANA)' : 'Transfer Manual (QRIS)');
+  document.getElementById('p2Price').textContent = fmt(activePrice);
+  setPanel2Manual();
+  goStep(2);
+}
+
+// Kunci form upload bukti supaya tidak bisa kirim dobel — dipanggil begitu
+// kita tahu sudah ada pengajuan (pending atau approved) untuk key ini,
+// baik saat halaman baru dibuka maupun tepat setelah submit sukses.
+function lockProofUpload(){
+  submissionLocked = true;
+  const input = document.getElementById('proofFileInputNew');
+  const area  = document.getElementById('proofUploadArea');
+  const btn   = document.getElementById('btnAjukanAkses');
+  if(input) input.disabled = true;
+  if(btn) btn.disabled = true;
+  if(area){
+    area.style.pointerEvents = 'none';
+    area.style.opacity = '0.6';
+  }
+}
+
+/* ============================================================
+   STEPS
+   ============================================================ */
+function goStep(n){
+  [1,2,3].forEach(i => {
+    document.getElementById('panel'   + i).classList.toggle('active', i === n);
+    const step = document.getElementById('step' + ['Pilih','Bayar','Selesai'][i-1]);
+    if(i < n) { step.className = 'pay-step done'; step.querySelector('.pay-step-dot').innerHTML = checkSvg(); }
+    else if(i === n) { step.className = 'pay-step active'; if(i<=3) step.querySelector('.pay-step-dot').textContent = i; }
+    else { step.className = 'pay-step'; step.querySelector('.pay-step-dot').textContent = i; }
+  });
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function checkSvg(){
+  return `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+/* ============================================================
+   HARGA ASLI DARI DATABASE (anti-manipulasi parameter URL)
+   ============================================================ */
+// Harga yang tampil di URL/sessionStorage TIDAK PERNAH dipakai langsung
+// untuk mengisi ctx.price. Fungsi ini selalu mengambil harga sebenarnya
+// dari tabel folder_prices (+ diskon global bila ada), supaya orang yang
+// membuka payment.html dengan parameter ?price= hasil ubahan sendiri
+// tetap ditagih sesuai harga asli folder tersebut, bukan harga karangan.
+async function resolveTruePrice(folderId){
+  // Harga admin (folder biasa maupun paket "Akses Semua Folder") sama-sama
+  // disimpan di tabel folder_prices, dikunci per folder_id.
+  let base = (folderId === CFG.allAccessId) ? CFG.allAccessDefaultPrice : CFG.defaultPrice;
+  try{
+    const { data } = await sb.from('folder_prices').select('price').eq('folder_id', folderId).maybeSingle();
+    if(data && typeof data.price === 'number') base = data.price;
+  }catch(e){ /* fallback ke default kalau query gagal */ }
+
+  if(base === 0) return 0; // folder gratis tetap gratis
+
+  // Paket "Akses Semua Folder" tidak pernah kena diskon global.
+  if(folderId !== CFG.allAccessId){
+    try{
+      const { data } = await sb.from('app_settings').select('value').eq('key','discount_percent').maybeSingle();
+      const pct = data && data.value ? parseFloat(data.value) : 0;
+      if(!isNaN(pct) && pct > 0){
+        base = Math.round(base * (1 - pct / 100));
+      }
+    }catch(e){}
+  }
+  return base;
+}
+
+async function init(){
+  // Init Supabase
+  if(window.supabase && CFG.supabaseUrl && CFG.supabaseKey){
+    sb = window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseKey);
+  }
+
+  // Baca context dari URL params (dikirim dari app.js saat redirect)
+  ctx.visitorName = getCookie('visitorName') || getParam('name');
+  ctx.folderId    = getParam('folderId')   || '';
+  ctx.folderName  = decodeURIComponent(getParam('folderName') || '');
+  ctx.price       = parseInt(getParam('price') || CFG.defaultPrice);
+  ctx.isAllAccess = ctx.folderId === CFG.allAccessId;
+
+  // Kalau ada di sessionStorage (dari modal app.js yang redirect),
+  // pakai itu sebagai fallback supaya params tidak kelihatan di URL
+  const stored = sessionStorage.getItem('mvip_payment_ctx');
+  if(stored){
+    try{
+      const s = JSON.parse(stored);
+      if(s.folderId) ctx.folderId   = s.folderId;
+      if(s.folderName) ctx.folderName = s.folderName;
+      if(s.price)    ctx.price      = s.price;
+      ctx.isAllAccess = ctx.folderId === CFG.allAccessId;
+    }catch(e){}
+  }
+
+  // Guard: harus login
+  if(!ctx.visitorName){
+    window.location.href = '/';
+    return;
+  }
+  // Guard: harus datang dengan folder tujuan yang jelas (bukan buka
+  // payment.html langsung tanpa konteks, misal dari histori/pencarian).
+  if(!ctx.folderId){
+    window.location.href = '/';
+    return;
+  }
+
+  // Ambil harga ASLI dari database
+  ctx.price = await resolveTruePrice(ctx.folderId);
+  // Harga Permanen: selalu 2× harga monthly (berlaku untuk folder individual maupun Akses Semua Folder)
+  ctx.permanentPrice = ctx.price * 2;
+
+  // Tampilkan harga di plan selector
+  document.getElementById('planPriceMonthly').textContent = fmt(ctx.price);
+  document.getElementById('planPricePermanent').textContent = fmt(ctx.permanentPrice);
+
+  // Semua folder (termasuk folder biasa) bisa pilih Permanen atau 1 Bulan
+  // (tidak ada penyembunyian kartu Permanen)
+
+  // Sembunyikan plan selector untuk folder gratis
+  if(ctx.price === 0){
+    document.getElementById('planSectionLabel').style.display = 'none';
+    document.getElementById('planSelector').style.display = 'none';
+  }
+
+  // Tampilkan ringkasan pesanan
+  document.getElementById('folderNameDisplay').textContent =
+    ctx.folderName || (ctx.isAllAccess ? CFG.allAccessName : 'Folder VIP');
+  document.getElementById('folderSubDisplay').textContent =
+    ctx.isAllAccess
+      ? 'Buka semua folder berbayar sekaligus'
+      : 'Video eksklusif Manado VIP';
+  document.getElementById('priceChip').textContent = fmt(ctx.price);
+
+  // Set QRIS image
+  const qrisUrl = ctx.isAllAccess
+    ? (CFG.qrisAllAccessUrl || CFG.qrisImageUrl)
+    : CFG.qrisImageUrl;
+  document.getElementById('qrisImg').src = qrisUrl;
+  document.getElementById('qrisHint').textContent = CFG.bankInfo
+    ? CFG.bankInfo + ' Setelah bayar, upload foto bukti transfer di bawah.'
+    : 'Scan QR di atas lalu upload foto bukti transfer di bawah.';
+
+  // Set nominal & nomor DANA
+  document.getElementById('danaAmountHint').textContent = fmt(ctx.price);
+  document.getElementById('danaNumberText').textContent = CFG.danaNumber;
+
+  // Default: QRIS + Langganan 1 Bulan
+  selectMethod('qris');
+  selectPlan('monthly');
+
+  // Cek apakah sudah ada pembayaran sebelumnya
+  await checkExistingPayment();
+}
+
+/* ============================================================
+   PILIH METODE (QRIS / DANA)
+   ============================================================ */
+function selectMethod(method){
+  selectedMethod = method;
+  const qrisCard = document.getElementById('qrisCard');
+  const danaCard = document.getElementById('danaCard');
+  const isQris = method === 'qris';
+  qrisCard.classList.toggle('selected', isQris);
+  danaCard.classList.toggle('selected', !isQris);
+  document.getElementById('proofUploadWrap').style.display = '';
+  hideStatus(1);
+}
+
+/* ============================================================
+   PILIH PAKET (1 Bulan / Permanen)
+   ============================================================ */
+function selectPlan(plan){
+  // Semua folder boleh pilih Permanen atau 1 Bulan
+  selectedPlan = plan;
+  document.getElementById('planCardMonthly').classList.toggle('selected', plan === 'monthly');
+  document.getElementById('planCardPermanent').classList.toggle('selected', plan === 'permanent');
+
+  const activePrice = plan === 'monthly' ? ctx.price : ctx.permanentPrice;
+  document.getElementById('priceChip').textContent = fmt(activePrice);
+  document.getElementById('danaAmountHint').textContent = fmt(activePrice);
+
+  const noteEl = document.getElementById('orderTotalNote');
+  if(noteEl){
+    noteEl.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      ${plan === 'monthly' ? 'Akses 30 hari penuh' : 'Bayar sekali, akses selamanya'}`;
+  }
+}
+
+// Kompatibilitas: selectQrisCard(true) dipanggil di beberapa tempat
+// (init, checkExistingPayment) untuk membuka default QRIS.
+function selectQrisCard(on){
+  if(on) selectMethod('qris');
+}
+
+function copyDanaNumber(){
+  const btn = document.getElementById('danaCopyBtn');
+  navigator.clipboard.writeText(CFG.danaNumber).then(() => {
+    if(!btn) return;
+    const original = btn.textContent;
+    btn.textContent = 'Tersalin ✓';
+    setTimeout(() => { btn.textContent = original; }, 1500);
+  }).catch(() => {});
+}
+
+/* ============================================================
+   PROOF FILE UPLOAD
+   ============================================================ */
+
+function checkBtnAjukan() {
+  document.getElementById('btnAjukanAkses').disabled = !selectedProofFile;
+}
+
+document.getElementById('proofFileInputNew').addEventListener('change', (e) => {
+  if(submissionLocked) return; // sudah ada pengajuan sebelumnya, tidak boleh pilih foto baru
+  const file = e.target.files && e.target.files[0];
+  if(!file) return;
+  if(!file.type.startsWith('image/')){
+    showStatus(1, 'error', 'File harus berupa gambar (JPG/PNG/HEIC).');
+    return;
+  }
+  if(file.size > 5 * 1024 * 1024){
+    showStatus(1, 'error', 'Ukuran file maksimal 5 MB.');
+    return;
+  }
+  selectedProofFile = file;
+  const area = document.getElementById('proofUploadArea');
+  const lbl  = document.getElementById('proofUploadLabel');
+  const sub  = document.getElementById('proofUploadSublabel');
+  const icon = document.getElementById('proofUploadIcon');
+  area.classList.add('has-file');
+  lbl.innerHTML = `<strong>${file.name}</strong>`;
+  sub.textContent = (file.size / 1024).toFixed(0) + ' KB · Ketuk untuk ganti';
+  icon.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
+  hideStatus(1);
+  checkBtnAjukan();
+});
+
+/* ============================================================
+   TOMBOL AJUKAN AKSES (manual)
+   ============================================================ */
+document.getElementById('btnAjukanAkses').addEventListener('click', async () => {
+  if(!selectedProofFile) return;
+  const btn = document.getElementById('btnAjukanAkses');
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spin"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></span> Mengunggah foto...`;
+
+  const key = requestKey(ctx.visitorName, ctx.folderId);
+
+  // Cek apakah sudah pending
+  const existing = await fetchPaymentEntry(key);
+  if(existing && existing.status === 'pending'){
+    lockProofUpload();
+    btn.innerHTML = resetBtnHtml();
+    goToManualPendingStep(existing.method ? `Transfer Manual (${existing.method})` : null);
+    startPoll();
+    return;
+  }
+  if(existing && existing.status === 'approved'){
+    goStep(3);
+    document.getElementById('successMsg').textContent = `Akses kamu ke "${ctx.folderName}" sudah aktif!`;
+    return;
+  }
+
+  const proofUrl = await uploadProof(selectedProofFile, key.replace(/[^a-z0-9]/gi, '_'));
+  if(!proofUrl){
+    showStatus(1, 'error', 'Gagal mengunggah foto. Coba lagi.');
+    btn.disabled = false;
+    btn.innerHTML = resetBtnHtml();
+    return;
+  }
+
+  btn.innerHTML = `<span class="spin"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></span> Mengirim...`;
+
+  const activePrice = selectedPlan === 'monthly' ? ctx.price : ctx.permanentPrice;
+  const planLabel   = selectedPlan === 'monthly' ? '1 Bulan' : 'Permanen';
+  const methodLabel = (selectedMethod === 'dana' ? 'DANA' : 'QRIS') + ' · ' + planLabel;
+
+  const entry = {
+    key,
+    name:         ctx.visitorName,
+    folder_id:    ctx.folderId,
+    folder_name:  ctx.folderName,
+    price:        activePrice,
+    status:       'pending',
+    proof_url:    proofUrl,
+    method:       methodLabel,
+    requested_at: new Date().toISOString(),
+    updated_at:   new Date().toISOString()
+  };
+
+  const newId = await upsertEntry(entry);
+  notifyTelegram({ ...entry, id: newId });
+
+  lockProofUpload();
+  btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Bukti Terkirim`;
+  goToManualPendingStep();
+  startPoll();
+});
+
+function resetBtnHtml(){
+  return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg> Ajukan Akses`;
+}
+
+/* ============================================================
+   CEK STATUS (panel 2)
+   ============================================================ */
+document.getElementById('btnCekStatus').addEventListener('click', async () => {
+  const btn = document.getElementById('btnCekStatus');
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spin"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></span> Memeriksa...`;
+  await checkAndAdvance();
+  btn.disabled = false;
+  btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.49-4.5"/></svg> Cek Status Pembayaran`;
+});
+
+/* ============================================================
+   POLLING
+   ============================================================ */
+function startPoll(){
+  stopPoll();
+  pollTimer = setInterval(checkAndAdvance, 8000);
+}
+function stopPoll(){
+  if(pollTimer){ clearInterval(pollTimer); pollTimer = null; }
+}
+
+async function checkAndAdvance(){
+  const key = requestKey(ctx.visitorName, ctx.folderId);
+  const entry = await fetchPaymentEntry(key);
+  if(!entry) return;
+  if(entry.status === 'approved'){
+    stopPoll();
+    const panel = document.getElementById('panel1').classList.contains('active') ? 1 : 2;
+    goStep(3);
+    document.getElementById('successMsg').textContent =
+      `Akses kamu ke "${ctx.folderName || 'folder ini'}" sudah aktif! Kembali ke halaman utama untuk mulai menonton.`;
+  }
+}
+
+/* ============================================================
+   CEK PEMBAYARAN EXISTING (saat halaman pertama dibuka)
+   ============================================================ */
+async function checkExistingPayment(){
+  if(!sb || !ctx.visitorName || !ctx.folderId) return;
+  const key = requestKey(ctx.visitorName, ctx.folderId);
+  const entry = await fetchPaymentEntry(key);
+  if(!entry) return;
+  if(entry.status === 'approved'){
+    goStep(3);
+    document.getElementById('successMsg').textContent =
+      `Akses kamu ke "${ctx.folderName || 'folder ini'}" sudah aktif!`;
+    return;
+  }
+  if(entry.status === 'pending'){
+    // Kunci form supaya tidak bisa pilih foto baru / kirim ulang,
+    // lalu tampilkan status "menunggu" di step 2 (Bayar).
+    selectMethod(entry.method && entry.method.includes('DANA') ? 'dana' : 'qris');
+    lockProofUpload();
+    goToManualPendingStep(entry.method ? `Transfer Manual (${entry.method})` : null);
+    startPoll();
+  }
+}
+
+/* ============================================================
+   SUPABASE HELPERS
+   ============================================================ */
+async function fetchPaymentEntry(key){
+  if(!sb) return null;
+  try{
+    const { data, error } = await sb
+      .from('payment_requests')
+      .select('*')
+      .eq('key', key)
+      .maybeSingle();
+    if(error) return null;
+    return data;
+  }catch(e){ return null; }
+}
+
+async function uploadProof(file, slug){
+  if(!sb) return null;
+  try{
+    const ext  = file.name.split('.').pop() || 'jpg';
+    const path = slug + '_' + Date.now() + '.' + ext;
+    const { data, error } = await sb.storage.from(CFG.proofBucket).upload(path, file, { upsert: true });
+    if(error) return null;
+    const { data: pub } = sb.storage.from(CFG.proofBucket).getPublicUrl(path);
+    return pub?.publicUrl || null;
+  }catch(e){ return null; }
+}
+
+async function upsertEntry(entry){
+  if(!sb) return null;
+  try{
+    const { data, error } = await sb
+      .from('payment_requests')
+      .upsert(entry, { onConflict: 'key' })
+      .select('id')
+      .maybeSingle();
+    if(error) return null;
+    return data?.id || null;
+  }catch(e){ return null; }
+}
+
+/* ============================================================
+   TELEGRAM NOTIFY
+   ============================================================ */
+async function notifyTelegram(entry){
+  const isAll = entry.folder_id === CFG.allAccessId;
+  try{
+    await fetch(CFG.telegramProxyUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'new_payment',
+        id: entry.id,
+        name: entry.name,
+        folderName: entry.folder_name,
+        method: entry.method,
+        price: entry.price,
+        proofUrl: entry.proof_url,
+        isAllAccess: isAll
+      })
+    });
+  }catch(e){}
+}
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+init();
+</script>
+</body>
+</html>

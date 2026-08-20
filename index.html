@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MANADO VIP</title>
+<meta name="description" content="Koleksi VIP eksklusif - akses video premium Manado.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="MANADO VIP">
+<meta property="og:description" content="Koleksi VIP eksklusif - akses video premium Manado.">
+<meta property="og:image" content="https://layarbiru.xyz/logo.png">
+<meta property="og:url" content="https://layarbiru.xyz">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MANADO VIP">
+<meta name="twitter:description" content="Koleksi VIP eksklusif - akses video premium Manado.">
+<meta name="twitter:image" content="https://layarbiru.xyz/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="https://layarbiru.xyz/logo.png">
+
+<!-- ===== PWA ===== -->
+<link rel="manifest" href="/manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Manado VIP">
+<meta name="theme-color" content="#0c1512">
+<link rel="apple-touch-icon" href="https://layarbiru.xyz/logo.png">
+<!-- ===== /PWA ===== -->
+<script>
+  // Otomatis ambil "versi cache" terbaru dari server (tabel app_settings,
+  // key 'asset_version') supaya style.css/core.js/admin.js/app.js selalu
+  // dimuat versi terbaru begitu admin update file, TANPA perlu admin ubah
+  // "?v=..." manual di index.html setiap kali deploy.
+  // CSS dimuat duluan pakai versi terakhir yang diketahui (dari localStorage)
+  // supaya tidak ada flash tampilan polos (FOUC), lalu di-hot-swap kalau
+  // ternyata ada versi lebih baru di server.
+  window.__assetVersionPromise = (function(){
+    var cached = localStorage.getItem('assetVersion') || '20';
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'style.css?v=' + cached;
+    document.head.appendChild(link);
+
+    return fetch('https://dwahqcqbytpczvgbzunm.supabase.co/rest/v1/app_settings?key=eq.asset_version&select=value', {
+      headers: {
+        apikey: 'sb_publishable_jQ7V9lI2DcT3oSrpj0XpGw_6r7YwPHF',
+        Authorization: 'Bearer sb_publishable_jQ7V9lI2DcT3oSrpj0XpGw_6r7YwPHF'
+      }
+    })
+      .then(function(r){ return r.json(); })
+      .then(function(rows){
+        var v = (rows && rows[0] && rows[0].value) ? String(rows[0].value) : cached;
+        if(v !== cached){
+          localStorage.setItem('assetVersion', v);
+          link.href = 'style.css?v=' + v;
+        }
+        return v;
+      })
+      .catch(function(){ return cached; });
+  })();
+</script>
+
+<style>
+/* ===== GATE OVERLAY — Simple Login ===== */
+.gate-overlay {
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  background: var(--bg) !important;
+  backdrop-filter: none !important;
+  padding: 24px !important;
+  min-height: 100vh;
+}
+.gate-logo-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 32px;
+}
+.gate-logo-wrap img {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+}
+.gate-logo-brand {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+.gate-logo-brand em {
+  color: var(--amber);
+  font-style: normal;
+}
+.gate-box {
+  width: 100%;
+  max-width: 340px;
+  box-sizing: border-box;
+}
+</style>
+
+<style>
+/* ===== MODAL KONTAK & SYARAT KETENTUAN ===== */
+.page-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 8000;
+  background: rgba(7,13,11,0.85);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  overflow-y: auto;
+  padding: 24px 16px 48px;
+}
+.page-modal.active { display: block; }
+.page-modal-inner {
+  max-width: 740px;
+  margin: 0 auto;
+  background: var(--bg, #0c1512);
+  border: 1px solid #24352e;
+  border-radius: 18px;
+  overflow: hidden;
+}
+.page-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 16px;
+  border-bottom: 1px solid #24352e;
+}
+.page-modal-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #9db0a6;
+  font-size: 13px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  transition: color .15s;
+}
+.page-modal-back:hover { color: var(--amber, #FFB800); }
+.page-modal-body {
+  padding: 24px 20px 32px;
+  line-height: 1.7;
+}
+.page-modal-eyebrow {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--amber, #FFB800);
+  margin-bottom: 8px;
+}
+.page-modal-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: clamp(20px, 4vw, 28px);
+  letter-spacing: -0.02em;
+  background: linear-gradient(120deg, #eef2ee 60%, rgba(255,184,0,0.9) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 6px;
+}
+.page-modal-meta {
+  font-size: 12px;
+  color: #9db0a6;
+  margin-bottom: 24px;
+}
+/* Kontak card */
+.pm-card {
+  background: #121e19;
+  border: 1px solid #24352e;
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  text-decoration: none;
+  color: inherit;
+  margin-bottom: 14px;
+  transition: border-color .2s, background .2s;
+}
+.pm-card:hover { border-color: #8A6500; background: #162118; }
+.pm-card-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  background: rgba(255,184,0,0.12);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 20px;
+}
+.pm-card-title { font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 700; color: #eef2ee; margin-bottom: 3px; }
+.pm-card-desc  { font-size: 13px; color: #9db0a6; margin-bottom: 6px; }
+.pm-card-link  { font-size: 13px; color: var(--amber, #FFB800); font-weight: 500; }
+.pm-info-box {
+  background: #121e19;
+  border: 1px solid #24352e;
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 14px;
+}
+.pm-info-box h2 { font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 700; color: #eef2ee; margin-bottom: 12px; }
+.pm-faq-item { margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid #24352e; }
+.pm-faq-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+.pm-faq-q { font-size: 13px; font-weight: 500; color: #eef2ee; margin-bottom: 3px; }
+.pm-faq-a { font-size: 13px; color: #9db0a6; }
+.pm-hours { display:flex; align-items:center; gap:8px; font-size:13px; color:#9db0a6; margin-top:14px; padding-top:14px; border-top:1px solid #24352e; }
+.pm-dot-online { width:8px; height:8px; border-radius:50%; background:#5fbf8e; flex-shrink:0; box-shadow:0 0 6px rgba(95,191,142,.5); }
+/* Syarat section */
+.pm-section { margin-bottom: 20px; padding: 18px; background: #121e19; border: 1px solid #24352e; border-radius: 12px; }
+.pm-section h2 { font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 700; color: var(--amber, #FFB800); margin-bottom: 10px; display:flex; align-items:center; gap:7px; }
+.pm-section h2 .num { background: #8A6500; color: var(--amber, #FFB800); font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+.pm-section p { font-size: 13px; color: #9db0a6; margin-bottom: 8px; }
+.pm-section p:last-child { margin-bottom: 0; }
+.pm-section ul { padding-left: 16px; margin-top: 6px; }
+.pm-section ul li { font-size: 13px; color: #9db0a6; margin-bottom: 5px; }
+.pm-highlight { color: #eef2ee; font-weight: 500; }
+</style>
+</head>
+<body>
+  <div class="gate-overlay" id="gateOverlay">
+
+    <!-- Logo -->
+    <div class="gate-logo-wrap">
+      <img src="https://layarbiru.xyz/logo.png" alt="Logo Manado VIP" onerror="this.style.display='none'">
+      <span class="gate-logo-brand">Manado<em>Vip</em></span>
+    </div>
+
+    <!-- Form -->
+    <div class="gate-box">
+      <p id="gateSubtitle" style="font-size:13px;color:var(--text-dim);margin-bottom:14px;text-align:center;">Masukkan nama kamu untuk melanjutkan.</p>
+      <input type="text" class="gate-input" id="gateNameInput" placeholder="Nama kamu" autocomplete="off">
+      <input type="password" class="gate-input" id="gatePasswordInput" placeholder="Password" autocomplete="off" style="display:none;">
+      <div class="gate-error" id="gateError"></div>
+      <button class="gate-btn" id="gateSubmitBtn">Masuk</button>
+    </div>
+
+  </div>
+
+  <div class="filmstrip"></div>
+
+  <!-- profileModal dikosongkan — profil sekarang inline di main via bottom nav -->
+  <div class="pw-modal" id="profileModal">
+    <button id="profileCloseBtn" style="display:none;" aria-label="Tutup profil"></button>
+  </div>
+
+  <div class="pw-modal" id="notifModal">
+    <div class="profile-box notif-box">
+      <button class="profile-box-close" id="notifCloseBtn" aria-label="Tutup pemberitahuan">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+      <div class="profile-card-title" style="margin-bottom:16px;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        Pemberitahuan
+      </div>
+      <div class="profile-payments-list" id="notifList" style="max-height:60vh;">
+        <div class="profile-payments-empty">Memuat...</div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div class="pw-modal" id="testiModal">
+    <div class="profile-box notif-box">
+      <button class="profile-box-close" id="testiCloseBtn" aria-label="Tutup testimoni">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+      <div class="profile-card-title" style="margin-bottom:16px;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Testimoni Pengguna
+      </div>
+
+      <div class="testi-form">
+        <textarea class="gate-input admin-textarea" id="testiMessageInput" placeholder="Tulis testimoni / komentar kamu tentang situs ini..." maxlength="300" rows="3"></textarea>
+        <div class="gate-error" id="testiError"></div>
+        <button class="gate-btn" id="testiSubmitBtn">Kirim Testimoni</button>
+      </div>
+
+      <div class="profile-payments-list" id="testiList" style="max-height:42vh; margin-top:18px;">
+        <div class="profile-payments-empty">Memuat...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal History Pembayaran (dibuka via bottom nav tab History) -->
+  <div class="pw-modal" id="historyModal">
+    <div class="profile-box notif-box">
+      <button class="profile-box-close" id="historyCloseBtn" aria-label="Tutup history">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+      <div class="profile-card-title" style="margin-bottom:16px;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Riwayat Pembayaran
+      </div>
+      <div class="profile-payments-list" id="historyPaymentsList" style="max-height:60vh;">
+        <div class="profile-payments-empty">Memuat...</div>
+      </div>
+    </div>
+  </div>
+
+  <header>
+    <div class="topbar">
+      <button class="brand" id="brandHomeBtn" aria-label="Kembali ke halaman utama">
+        <img src="https://layarbiru.xyz/logo.png" alt="Logo Manado VIP" class="brand-logo" onerror="this.style.display='none'">
+        <span class="brand-word">Manado<em>Vip</em></span>
+      </button>
+      <div class="corner-btn-group">
+
+        <button class="notif-bell-btn" id="pwaInstallBtn" aria-label="Pasang Aplikasi" title="Pasang Manado VIP ke layar utama">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+        <button class="notif-bell-btn" id="testiBtn" style="display:none;" aria-label="Testimoni">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </button>
+        <button class="notif-bell-btn" id="notifBellBtn" style="display:none;" aria-label="Pemberitahuan">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="notif-badge" id="notifBadge" style="display:none;"></span>
+        </button>
+        <button class="profile-corner-btn" id="profileCornerBtn" style="display:none;" aria-label="Profil">
+          <span class="corner-avatar-text" id="cornerAvatarText"></span>
+          <span class="corner-vip-badge" id="cornerVipBadge" style="display:none;" title="VIP - Akses Semua Folder">👑</span>
+        </button>
+      </div>
+    </div>
+    <div class="breadcrumb" id="breadcrumb"></div>
+    <h1 id="pageTitle">Manado Vip</h1>
+    <div class="sub"><span class="dot"></span><span id="statusText">Memuat...</span></div>
+  </header>
+  <main>
+    <div id="foldersSection">
+      <div class="section-label">Folder</div>
+      <div class="folder-payment-notice" id="allAccessNotice" style="display:none;">
+        <span id="allAccessNoticeText"></span>
+      </div>
+      <div class="folders" id="folders"></div>
+    </div>
+    <div id="videosSection">
+      <button class="back-btn" id="backToFoldersBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Semua Folder
+      </button>
+      <div class="section-label">Video</div>
+      <div class="folder-payment-notice" id="folderPaymentNotice" style="display:none;">
+        <span id="folderPaymentNoticeText"></span>
+      </div>
+      <div class="grid" id="grid"></div>
+    </div>
+    <!-- Profil inline section (bottom nav) -->
+    <div id="profilSection" style="display:none;">
+
+      <!-- Hero: avatar + nama + badge -->
+      <div class="profil-hero">
+        <div class="profil-avatar-wrap">
+          <div class="profile-avatar" id="profileAvatar">
+            <span id="profileAvatarInitial">?</span>
+          </div>
+          <span class="vip-badge" id="profileVipBadge" style="display:none;">👑 VIP</span>
+        </div>
+        <div class="profil-hero-name" id="profileNameText">Pengunjung</div>
+        <div class="profil-hero-sub">Member Manado Vip</div>
+      </div>
+
+      <!-- Card keamanan akun -->
+      <div class="profile-cards">
+        <div class="profile-card" id="profileSecuritySection">
+          <div class="profile-card-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            Keamanan Akun
+          </div>
+          <div id="profileSecurityInfo" class="profil-security-info">Memuat...</div>
+          <div id="profileSecurityForm" class="profile-security-form" style="display:none;">
+            <input type="password" class="gate-input" id="profileOldPasswordInput" placeholder="Password lama" style="display:none;">
+            <input type="password" class="gate-input" id="profileNewPasswordInput" placeholder="Password baru">
+            <input type="password" class="gate-input" id="profileNewPasswordConfirm" placeholder="Ulangi password baru">
+            <div class="gate-error" id="profileSecurityError"></div>
+            <button class="gate-btn" id="profileSecuritySubmitBtn">Simpan Password</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tombol keluar -->
+      <div class="profile-actions" style="margin-top:4px;">
+        <button class="gate-btn profile-logout-btn" id="profileLogoutBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Keluar dari Akun
+        </button>
+      </div>
+    </div>
+
+    <!-- Notifikasi inline section (bottom nav) -->
+    <div id="notifikasiSection" style="display:none;">
+      <div class="notif-section-header">
+        <div class="notif-section-icon-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </div>
+        <div>
+          <div class="notif-section-title">Notifikasi</div>
+          <div class="notif-section-sub">Pemberitahuan dari admin untukmu</div>
+        </div>
+      </div>
+      <div class="notif-list" id="inlineNotifList">
+        <div class="profile-payments-empty">Memuat...</div>
+      </div>
+    </div>
+
+    <!-- History inline section (bottom nav) -->
+    <div id="historySection" style="display:none;">
+      <div class="section-label" style="display:flex;align-items:center;gap:8px;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Riwayat Pembayaran
+      </div>
+      <div class="profile-payments-list" id="inlineHistoryList" style="margin-top:12px;">
+        <div class="profile-payments-empty">Memuat...</div>
+      </div>
+    </div>
+  </main>
+  <footer style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 16px;padding:16px 24px;">
+    <span>Diperbarui otomatis dari Google Drive setiap refresh.</span>
+    <span style="opacity:.4;">&middot;</span>
+    <a href="#" onclick="document.getElementById('syaratModal').classList.add('active');return false;" style="color:var(--amber,#FFB800);text-decoration:none;font-size:12px;">Syarat &amp; Ketentuan</a>
+    <span style="opacity:.4;">&middot;</span>
+    <a href="#" onclick="document.getElementById('kontakModal').classList.add('active');return false;" style="color:var(--amber,#FFB800);text-decoration:none;font-size:12px;">Kontak &amp; CS</a>
+  </footer>
+
+  <div class="fullscreen-modal" id="fullscreenModal">
+    <div class="modal-content" id="modalContent">
+      <button class="modal-close" id="modalCloseBtn" aria-label="Tutup video">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <div class="modal-player-wrap" id="modalPlayerWrap">
+        <div class="modal-loading" id="modalLoading">
+          <div class="modal-spinner"></div>
+          <span>Memuat video...</span>
+        </div>
+
+        <video class="modal-video" id="modalVideo" playsinline webkit-playsinline preload="metadata" oncontextmenu="return false;"></video>
+        <iframe class="modal-iframe" id="modalIframe" style="display:none;" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+
+        <!-- Tombol play besar di tengah, muncul cuma waktu video di-pause -->
+        <button class="video-center-play" id="videoCenterPlay" aria-label="Putar video">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+
+        <!-- Kontrol custom: mundur 10dtk, play/pause, maju 10dtk, fullscreen -->
+        <div class="video-controls" id="videoControls">
+          <div class="video-progress" id="videoProgress">
+            <div class="video-progress-fill" id="videoProgressFill"></div>
+          </div>
+          <div class="video-controls-row">
+            <button class="video-ctrl-btn" id="btnSkipBack" aria-label="Mundur 10 detik">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-9.36L1 10"/></svg>
+            </button>
+            <button class="video-ctrl-btn video-ctrl-play" id="btnPlayPause" aria-label="Play/Pause">
+              <svg id="iconPlay" width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              <svg id="iconPause" width="17" height="17" viewBox="0 0 24 24" fill="currentColor" style="display:none;"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>
+            </button>
+            <button class="video-ctrl-btn" id="btnSkipForward" aria-label="Maju 10 detik">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.49-9.36L23 10"/></svg>
+            </button>
+            <span class="video-time" id="videoTime">0:00 / 0:00</span>
+            <div style="flex:1;"></div>
+            <button class="video-ctrl-btn" id="btnFullscreen" aria-label="Fullscreen">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal pembayaran dipindah ke /payment.html -->
+
+  <div class="pw-modal" id="adminPwModal">
+    <div class="pw-box">
+      <h3>Admin Login</h3>
+      <p>Masukkan password admin.</p>
+      <input type="password" class="gate-input" id="adminPwInput" placeholder="Password admin" autocomplete="off">
+      <div class="gate-error" id="adminPwError"></div>
+      <button class="gate-btn" id="adminPwSubmitBtn">Masuk</button>
+    </div>
+  </div>
+
+  <div class="admin-overlay" id="adminDashboard" style="display:none;">
+    <div class="admin-shell">
+
+      <aside class="admin-sidebar" id="adminSidebar">
+        <div class="admin-brand">
+          <img src="https://layarbiru.xyz/logo.png" alt="" class="admin-brand-logo" onerror="this.style.display='none'">
+          <div class="admin-brand-text">
+            <span class="admin-brand-title">Manado<em>Vip</em></span>
+            <span class="admin-brand-sub">Admin Dashboard</span>
+          </div>
+          <button class="admin-sidebar-close" id="adminSidebarCloseBtn" aria-label="Tutup menu">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+
+        <nav class="admin-tabs" id="adminTabs">
+          <button class="admin-tab-btn" data-tab="players">
+            <span class="admin-tab-icon">👥</span><span class="admin-tab-label">Player</span>
+          </button>
+          <button class="admin-tab-btn" data-tab="requests">
+            <span class="admin-tab-icon">💳</span><span class="admin-tab-label">Pembayaran</span>
+            <span class="tab-count-badge admin-tab-nav-badge" id="reqPendingNavBadge" style="display:none;"></span>
+          </button>
+          <button class="admin-tab-btn" data-tab="prices">
+            <span class="admin-tab-icon">🏷️</span><span class="admin-tab-label">Harga</span>
+          </button>
+          <button class="admin-tab-btn" data-tab="notifications">
+            <span class="admin-tab-icon">🔔</span><span class="admin-tab-label">Notifikasi</span>
+          </button>
+          <button class="admin-tab-btn" data-tab="testimonials">
+            <span class="admin-tab-icon">💬</span><span class="admin-tab-label">Testimoni</span>
+          </button>
+          <button class="admin-tab-btn" data-tab="cache">
+            <span class="admin-tab-icon">🧹</span><span class="admin-tab-label">Cache</span>
+          </button>
+        </nav>
+
+        <button class="gate-btn admin-sidebar-logout-btn" id="adminLogoutBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Keluar
+        </button>
+      </aside>
+
+      <div class="admin-sidebar-scrim" id="adminSidebarScrim"></div>
+
+      <div class="admin-main">
+        <div class="admin-topbar">
+          <button class="admin-menu-btn" id="adminMenuBtn" aria-label="Buka menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <div class="admin-topbar-title" id="adminTopbarTitle">Player</div>
+          <button class="admin-header-logout-btn" id="adminHeaderLogoutBtn" title="Keluar dari dashboard admin">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Keluar
+          </button>
+        </div>
+
+        <div class="admin-content">
+          <div class="admin-stats" id="adminStatsRow">
+            <div class="admin-stat-chip" id="statOnlineChip">
+              <div class="stat-icon-circle">👥</div>
+              <div class="stat-chip-text">
+                <span class="stat-num" id="statOnlineNum">0</span>
+                <span class="stat-label">Online sekarang</span>
+              </div>
+            </div>
+            <div class="admin-stat-chip pending zero" id="statPendingChip">
+              <div class="stat-icon-circle">💳</div>
+              <div class="stat-chip-text">
+                <span class="stat-num" id="statPendingNum">0</span>
+                <span class="stat-label">Menunggu bayar</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-tab-panel" id="adminTabPlayers">
+            <div class="admin-section">
+              <div class="admin-section-header">
+                <h2>Player Online</h2>
+              </div>
+              <p id="adminStatusText" class="admin-muted-text">Memuat...</p>
+              <div id="adminPlayerList" class="admin-list"></div>
+            </div>
+          </div>
+
+          <div class="admin-tab-panel" id="adminTabRequests">
+            <div class="admin-section">
+              <div class="admin-section-header">
+                <h2>Permintaan Pembayaran</h2>
+                <button class="pbtn-refresh pbtn-danger" id="adminRequestsDeleteAllBtn" title="Hapus semua riwayat permintaan pembayaran">Hapus Semua</button>
+              </div>
+              <div class="req-subtabs" id="reqSubtabs">
+                <button class="req-subtab-btn active" data-filter="pending">Menunggu <span class="tab-count-badge" id="reqPendingBadge" style="display:none;"></span></button>
+                <button class="req-subtab-btn" data-filter="history">Riwayat</button>
+              </div>
+              <input type="text" class="req-search-input" id="reqSearchInput" placeholder="🔍 Cari nama atau folder...">
+              <p id="adminRequestsStatusText" class="admin-muted-text">Memuat...</p>
+              <div id="adminRequestsList" class="admin-list"></div>
+            </div>
+          </div>
+
+          <div class="admin-tab-panel" id="adminTabPrices">
+            <div class="admin-section">
+              <div class="admin-section-header">
+                <h2>Harga Akses</h2>
+                <button class="pbtn-refresh" id="adminPricesRefreshBtn" title="Muat ulang daftar folder dari Google Drive">Muat Ulang</button>
+              </div>
+              <p id="adminPricesStatusText" class="admin-muted-text">Memuat...</p>
+              <div id="adminDiscountWrap" style="margin-bottom:16px;"></div>
+              <div id="adminAllAccessPriceWrap" style="margin-bottom:16px;"></div>
+              <div id="adminPricesList" class="admin-list"></div>
+            </div>
+          </div>
+
+          <div class="admin-tab-panel" id="adminTabNotifications">
+            <div class="admin-section">
+              <div class="admin-section-header">
+                <h2>Kirim Pemberitahuan</h2>
+              </div>
+              <p class="admin-muted-text">Pemberitahuan akan langsung muncul di ikon lonceng semua pengguna yang sedang login.</p>
+              <input type="text" class="gate-input" id="adminNotifTitleInput" placeholder="Judul pemberitahuan" maxlength="80">
+              <textarea class="gate-input admin-textarea" id="adminNotifMessageInput" placeholder="Isi pesan..." maxlength="500" rows="4"></textarea>
+              <div class="gate-error" id="adminNotifError"></div>
+              <button class="gate-btn" id="adminNotifSendBtn" style="margin-bottom:8px;">Kirim Pemberitahuan</button>
+            </div>
+
+            <div class="admin-section">
+              <div class="admin-section-header">
+                <h2>Riwayat Pemberitahuan</h2>
+                <button class="pbtn-refresh" id="adminNotifRefreshBtn" title="Muat ulang daftar">Muat Ulang</button>
+              </div>
+              <p id="adminNotifStatusText" class="admin-muted-text">Memuat...</p>
+              <div id="adminNotifList" class="admin-list"></div>
+            </div>
+          </div>
+
+          <div class="admin-tab-panel" id="adminTabTestimonials">
+            <div class="admin-section">
+              <div class="admin-section-header">
+                <h2>Testimoni Pengguna</h2>
+                <button class="pbtn-refresh" id="adminTestiRefreshBtn" title="Muat ulang daftar">Muat Ulang</button>
+              </div>
+              <p class="admin-muted-text">Testimoni yang dikirim langsung oleh pengguna. Hapus yang berisi spam atau tidak pantas.</p>
+              <p id="adminTestiStatusText" class="admin-muted-text">Memuat...</p>
+              <div id="adminTestiList" class="admin-list"></div>
+            </div>
+          </div>
+
+          <div class="admin-tab-panel" id="adminTabCache">
+            <div class="admin-section">
+              <div class="admin-section-header">
+                <h2>🔄 Perbarui Cache CSS &amp; JS</h2>
+              </div>
+              <p class="admin-muted-text" style="margin-bottom:14px;">
+                Setelah kamu upload file <code>style.css</code>, <code>core.js</code>, <code>admin.js</code>, atau <code>app.js</code> yang baru ke hosting, tekan tombol ini supaya browser semua pengunjung otomatis mengambil versi terbaru &mdash; mereka tidak perlu hard refresh atau hapus cache manual sendiri.
+              </p>
+              <p id="adminAssetVersionStatusText" style="color:var(--text-dim); font-size:12px; margin-bottom:14px;">Memuat status...</p>
+              <button class="gate-btn" id="adminRefreshAssetsBtn" style="max-width:280px;">🔄 Perbarui Cache Sekarang</button>
+              <div class="gate-error" id="adminAssetVersionError"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- ===== BOTTOM NAVIGATION BAR ===== -->
+<nav class="bottom-nav" id="bottomNav">
+  <button class="bottom-nav-item active" id="bnDashboard" aria-label="Dashboard">
+    <div class="bn-icon-wrap">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+    </div>
+    <span>Dashboard</span>
+  </button>
+  <button class="bottom-nav-item" id="bnNotifikasi" aria-label="Notifikasi">
+    <span class="bn-notif-badge" id="bnNotifDot" style="display:none;"></span>
+    <div class="bn-icon-wrap">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    </div>
+    <span>Notifikasi</span>
+  </button>
+  <button class="bottom-nav-item" id="bnHistory" aria-label="History">
+    <div class="bn-icon-wrap">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    </div>
+    <span>History</span>
+  </button>
+  <button class="bottom-nav-item" id="bnProfil" aria-label="Profil">
+    <div class="bn-icon-wrap">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </div>
+    <span>Profil</span>
+  </button>
+</nav>
+
+<script>
+  // Muat supabase SDK + core.js + admin.js + app.js begitu versi aset
+  // sudah didapat (lihat script di <head>), dengan urutan load yang tetap
+  // terjaga (async=false) supaya core.js selesai duluan sebelum admin.js,
+  // dan admin.js sebelum app.js -- persis seperti urutan <script> statis
+  // sebelumnya, tapi query "?v=..." sekarang otomatis & selalu terbaru.
+  window.__assetVersionPromise.then(function(v){
+    [
+      'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
+      'bundle.js?v=' + v
+    ].forEach(function(src){
+      var s = document.createElement('script');
+      s.src = src;
+      s.async = false;
+      document.body.appendChild(s);
+    });
+  });
+</script>
+<script>
+  /* ===== REGISTRASI SERVICE WORKER (PWA) ===== */
+  (function () {
+    var installBtn = document.getElementById('pwaInstallBtn');
+    var deferredPrompt = null;
+    var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+    // ── Sembunyikan tombol kalau sudah terpasang sebagai app ───────────────
+    if (isStandalone) {
+      if (installBtn) installBtn.style.display = 'none';
+    }
+
+    // ── Registrasi SW ──────────────────────────────────────────────────────
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+          .then(function (reg) {
+            console.log('[PWA] SW terdaftar:', reg.scope);
+            reg.addEventListener('updatefound', function () {
+              var nw = reg.installing;
+              if (!nw) return;
+              nw.addEventListener('statechange', function () {
+                if (nw.state === 'activated' && navigator.serviceWorker.controller) {
+                  window.location.reload();
+                }
+              });
+            });
+          })
+          .catch(function (err) { console.warn('[PWA] SW gagal:', err); });
+      });
+    }
+
+    // ── Simpan event install dari browser (Chrome/Edge Android & Desktop) ──
+    window.addEventListener('beforeinstallprompt', function (e) {
+      e.preventDefault();
+      deferredPrompt = e;
+    });
+
+    // ── Sembunyikan tombol setelah app terpasang ───────────────────────────
+    window.addEventListener('appinstalled', function () {
+      if (installBtn) installBtn.style.display = 'none';
+      deferredPrompt = null;
+      var tip = document.getElementById('pwa-tip');
+      if (tip) tip.remove();
+    });
+
+    // ── Tooltip panduan manual (muncul saat tombol diklik) ────────────────
+    function showTip(html) {
+      var old = document.getElementById('pwa-tip');
+      if (old) old.remove();
+      var tip = document.createElement('div');
+      tip.id = 'pwa-tip';
+      tip.style.cssText = [
+        'position:fixed','top:56px','right:12px','z-index:9999',
+        'background:#1a2820','border:1px solid #2e4438','border-radius:12px',
+        'padding:14px 16px','max-width:260px','font-size:13px',
+        'color:#eef2ee','line-height:1.6','box-shadow:0 6px 24px rgba(0,0,0,.55)'
+      ].join(';');
+      tip.innerHTML = html + '<div style="margin-top:10px;text-align:right;">'
+        + '<button onclick="document.getElementById(\'pwa-tip\').remove()" '
+        + 'style="background:none;border:none;color:#FFB800;font-size:12px;'
+        + 'font-weight:700;cursor:pointer;">Tutup</button></div>';
+      document.body.appendChild(tip);
+      // Auto-close setelah 12 detik
+      setTimeout(function () { var t = document.getElementById('pwa-tip'); if (t) t.remove(); }, 12000);
+    }
+
+    // ── Klik tombol install ────────────────────────────────────────────────
+    if (installBtn) {
+      installBtn.addEventListener('click', function () {
+        // Sudah standalone — tidak perlu install lagi
+        if (isStandalone) return;
+
+        // Chrome/Edge — native install prompt tersedia
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then(function (r) {
+            if (r.outcome === 'accepted') installBtn.style.display = 'none';
+            deferredPrompt = null;
+          });
+          return;
+        }
+
+        // iOS Safari — tidak ada native prompt, tampilkan panduan
+        if (isIOS) {
+          showTip(
+            '<b style="color:#FFB800;">Cara pasang di iPhone/iPad:</b><br>' +
+            '① Tap ikon <b>Bagikan</b> (kotak dengan panah ↑) di bawah browser<br>' +
+            '② Pilih <b>"Tambahkan ke Layar Utama"</b><br>' +
+            '③ Tap <b>Tambahkan</b>'
+          );
+          return;
+        }
+
+        // Browser lain (Firefox, Samsung Internet, dll)
+        showTip(
+          '<b style="color:#FFB800;">Cara pasang aplikasi:</b><br>' +
+          'Buka menu browser (⋮ atau ≡) lalu pilih<br>' +
+          '<b>"Tambahkan ke Layar Utama"</b> atau <b>"Install App"</b>'
+        );
+      });
+    }
+  })();
+</script>
+
+<script>
+  // UI-only wiring for the redesigned admin dashboard: mobile sidebar
+  // open/close + syncing the topbar title label with the active tab.
+  // Does not touch tab-switching logic itself (still handled in admin.js).
+  (function(){
+    function q(id){ return document.getElementById(id); }
+    var sidebar = q('adminSidebar');
+    var scrim = q('adminSidebarScrim');
+    var menuBtn = q('adminMenuBtn');
+    var closeBtn = q('adminSidebarCloseBtn');
+    var topbarTitle = q('adminTopbarTitle');
+
+    function openSidebar(){ if(sidebar) sidebar.classList.add('open'); if(scrim) scrim.classList.add('visible'); }
+    function closeSidebar(){ if(sidebar) sidebar.classList.remove('open'); if(scrim) scrim.classList.remove('visible'); }
+
+    if(menuBtn) menuBtn.addEventListener('click', openSidebar);
+    if(closeBtn) closeBtn.addEventListener('click', closeSidebar);
+    if(scrim) scrim.addEventListener('click', closeSidebar);
+
+    document.addEventListener('click', function(e){
+      var btn = e.target.closest('.admin-tab-btn');
+      if(!btn) return;
+      var label = btn.querySelector('.admin-tab-label');
+      if(topbarTitle && label) topbarTitle.textContent = label.textContent;
+      closeSidebar();
+    });
+  })();
+</script>
+
+<!-- ===== MODAL KONTAK ===== -->
+<div class="page-modal" id="kontakModal">
+  <div class="page-modal-inner">
+    <div class="page-modal-header">
+      <button class="page-modal-back" id="kontakModalClose">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        Kembali
+      </button>
+    </div>
+    <div class="page-modal-body">
+      <div class="page-modal-eyebrow">Bantuan</div>
+      <div class="page-modal-title">Hubungi Kami</div>
+      <div class="page-modal-meta">Customer service siap membantu kamu</div>
+
+      <a href="https://wa.me/6289691398271" class="pm-card" target="_blank" rel="noopener">
+        <div class="pm-card-icon">💬</div>
+        <div>
+          <div class="pm-card-title">WhatsApp</div>
+          <div class="pm-card-desc">Cara tercepat untuk mendapat bantuan. Kirim pesan dan kami akan balas secepatnya.</div>
+          <div class="pm-card-link">+62 896-9139-8271 →</div>
+        </div>
+      </a>
+
+      <div class="pm-info-box">
+        <h2>Pertanyaan yang Sering Ditanya</h2>
+        <div class="pm-faq-item">
+          <div class="pm-faq-q">Akses saya belum aktif setelah bayar, kenapa?</div>
+          <div class="pm-faq-a">Konfirmasi pembayaran biasanya membutuhkan waktu beberapa menit hingga 1 jam. Jika lebih dari itu, hubungi kami via WhatsApp dengan menyertakan nama dan bukti transfer.</div>
+        </div>
+        <div class="pm-faq-item">
+          <div class="pm-faq-q">Apakah bisa refund?</div>
+          <div class="pm-faq-a">Pembayaran bersifat non-refundable setelah akses diaktifkan. Jika ada kendala teknis dari pihak kami, hubungi CS untuk penyelesaian.</div>
+        </div>
+        <div class="pm-faq-item">
+          <div class="pm-faq-q">Berapa lama akses berlaku?</div>
+          <div class="pm-faq-a">Akses bersifat permanen selama layanan masih aktif. Tidak ada batas waktu untuk konten yang sudah dibeli.</div>
+        </div>
+        <div class="pm-faq-item">
+          <div class="pm-faq-q">Bisa diakses dari HP?</div>
+          <div class="pm-faq-a">Ya, website ini sepenuhnya mobile-friendly dan bisa diakses dari browser HP manapun.</div>
+        </div>
+        <div class="pm-hours">
+          <span class="pm-dot-online"></span>
+          Jam layanan: Setiap hari, 08.00 – 22.00 WIB
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL SYARAT & KETENTUAN ===== -->
+<div class="page-modal" id="syaratModal">
+  <div class="page-modal-inner">
+    <div class="page-modal-header">
+      <button class="page-modal-back" id="syaratModalClose">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        Kembali
+      </button>
+    </div>
+    <div class="page-modal-body">
+      <div class="page-modal-eyebrow">Legal</div>
+      <div class="page-modal-title">Syarat &amp; Ketentuan</div>
+      <div class="page-modal-meta">Berlaku sejak 1 Agustus 2026 · Koleksi VIP</div>
+
+      <div class="pm-section">
+        <h2><span class="num">1</span> Layanan</h2>
+        <p>Koleksi VIP adalah platform penjualan akses konten video digital. Pengguna dapat membeli akses ke folder video tertentu dengan sistem pembayaran <span class="pm-highlight">sekali bayar per folder</span>, atau paket Akses Semua Folder untuk membuka seluruh konten sekaligus.</p>
+        <p>Konten yang tersedia bersifat digital dan dapat diakses langsung melalui browser setelah pembayaran dikonfirmasi.</p>
+      </div>
+      <div class="pm-section">
+        <h2><span class="num">2</span> Ketentuan Pembayaran</h2>
+        <ul>
+          <li>Harga yang tertera adalah harga final dalam Rupiah (IDR).</li>
+          <li>Pembayaran bersifat <span class="pm-highlight">tidak dapat dikembalikan (non-refundable)</span> setelah akses diaktifkan.</li>
+          <li>Akses akan diaktifkan setelah pembayaran berhasil dikonfirmasi.</li>
+          <li>Satu pembayaran berlaku untuk satu nama pengguna yang terdaftar.</li>
+        </ul>
+      </div>
+      <div class="pm-section">
+        <h2><span class="num">3</span> Akun Pengguna</h2>
+        <ul>
+          <li>Pengguna mendaftar menggunakan nama dan dapat menambahkan password untuk keamanan akun.</li>
+          <li>Pengguna bertanggung jawab menjaga kerahasiaan nama dan password akun mereka.</li>
+          <li>Dilarang berbagi akses dengan orang lain atau menjual kembali akses yang telah dibeli.</li>
+          <li>Kami berhak menonaktifkan akun yang terbukti disalahgunakan.</li>
+        </ul>
+      </div>
+      <div class="pm-section">
+        <h2><span class="num">4</span> Hak Kekayaan Intelektual</h2>
+        <p>Seluruh konten yang tersedia di platform ini dilindungi hak cipta. Pengguna <span class="pm-highlight">dilarang</span> mengunduh, mendistribusikan, merekam ulang, atau menyebarluaskan konten dalam bentuk apapun tanpa izin tertulis.</p>
+        <p>Akses yang diberikan hanya untuk keperluan menonton secara pribadi (personal viewing).</p>
+      </div>
+      <div class="pm-section">
+        <h2><span class="num">5</span> Kebijakan Privasi</h2>
+        <ul>
+          <li>Data yang dikumpulkan: nama pengguna, status pembayaran, dan waktu akses.</li>
+          <li>Data tidak dijual atau dibagikan kepada pihak ketiga.</li>
+          <li>Bukti transfer yang diunggah disimpan untuk keperluan verifikasi dan dapat dihapus setelah konfirmasi.</li>
+        </ul>
+      </div>
+      <div class="pm-section">
+        <h2><span class="num">6</span> Batasan Tanggung Jawab</h2>
+        <p>Kami tidak bertanggung jawab atas gangguan akses yang disebabkan oleh kondisi di luar kendali kami, termasuk gangguan jaringan internet, pemeliharaan server Google Drive, atau force majeure.</p>
+        <p>Konten dapat berubah sewaktu-waktu. Kami berhak menambah, mengubah, atau menghapus konten tanpa pemberitahuan sebelumnya.</p>
+      </div>
+      <div class="pm-section">
+        <h2><span class="num">7</span> Perubahan Ketentuan</h2>
+        <p>Kami berhak memperbarui syarat dan ketentuan ini sewaktu-waktu. Perubahan akan berlaku sejak dipublikasikan. Penggunaan layanan secara berkelanjutan dianggap sebagai persetujuan terhadap perubahan tersebut.</p>
+      </div>
+      <div class="pm-section">
+        <h2>Pertanyaan?</h2>
+        <p>Hubungi kami melalui <a href="https://wa.me/6289691398271" style="color:var(--amber,#FFB800);text-decoration:none;">WhatsApp</a> jika ada pertanyaan terkait syarat dan ketentuan ini.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // Kontak modal
+  var kontakClose = document.getElementById('kontakModalClose');
+  var kontakModal = document.getElementById('kontakModal');
+  if(kontakClose) kontakClose.addEventListener('click', function(){ kontakModal.classList.remove('active'); });
+  if(kontakModal) kontakModal.addEventListener('click', function(e){ if(e.target === kontakModal) kontakModal.classList.remove('active'); });
+
+  // Syarat modal
+  var syaratClose = document.getElementById('syaratModalClose');
+  var syaratModal = document.getElementById('syaratModal');
+  if(syaratClose) syaratClose.addEventListener('click', function(){ syaratModal.classList.remove('active'); });
+  if(syaratModal) syaratModal.addEventListener('click', function(e){ if(e.target === syaratModal) syaratModal.classList.remove('active'); });
+
+  // Tutup dengan tombol Escape
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){
+      if(kontakModal) kontakModal.classList.remove('active');
+      if(syaratModal) syaratModal.classList.remove('active');
+    }
+  });
+})();
+</script>
+</body>
+</html>

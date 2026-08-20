@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tidak Ada Koneksi — Manado VIP</title>
+<style>
+  :root {
+    --bg: #0c1512;
+    --bg-elev: #121e19;
+    --line: #24352e;
+    --text: #eef2ee;
+    --text-dim: #9db0a6;
+    --amber: #e8a33d;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+    gap: 0;
+  }
+  .icon {
+    font-size: 52px;
+    margin-bottom: 20px;
+    opacity: .85;
+  }
+  h1 {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-size: clamp(20px, 5vw, 28px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+  p {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.7;
+    max-width: 320px;
+    margin: 0 auto 28px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--amber);
+    color: #0c1512;
+    font-weight: 700;
+    font-size: 14px;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 24px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity .15s;
+  }
+  .btn:hover { opacity: .85; }
+  .strip {
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--amber), transparent);
+    border-radius: 2px;
+    margin: 0 auto 24px;
+  }
+</style>
+</head>
+<body>
+  <div class="icon">📡</div>
+  <h1>Kamu Sedang Offline</h1>
+  <div class="strip"></div>
+  <p>Tidak ada koneksi internet saat ini. Pastikan kamu terhubung ke Wi-Fi atau data seluler, lalu coba lagi.</p>
+  <button class="btn" onclick="window.location.reload()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-9.36L1 10"/>
+    </svg>
+    Coba Lagi
+  </button>
+</body>
+</html>

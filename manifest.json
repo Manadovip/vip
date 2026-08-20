@@ -1,0 +1,57 @@
+{
+  "name": "Manado VIP",
+  "short_name": "ManadoVip",
+  "description": "Koleksi video premium eksklusif dari Manado — akses per folder atau paket semua.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#0c1512",
+  "background_color": "#0c1512",
+  "lang": "id",
+  "dir": "ltr",
+  "categories": [
+    "entertainment"
+  ],
+  "icons": [
+    {
+      "src": "https://layarbiru.xyz/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://layarbiru.xyz/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Buka Dashboard",
+      "short_name": "Dashboard",
+      "description": "Langsung ke daftar folder video",
+      "url": "/",
+      "icons": [
+        {
+          "src": "https://layarbiru.xyz/logo.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Hubungi CS",
+      "short_name": "Kontak",
+      "description": "Hubungi customer service (buka halaman utama, klik Kontak di footer)",
+      "url": "/",
+      "icons": [
+        {
+          "src": "https://layarbiru.xyz/logo.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}
