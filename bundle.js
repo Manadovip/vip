@@ -2793,7 +2793,7 @@ function openPaymentModal(lockInfo){
     folderName: lockInfo.folderName,
     price:      price
   }));
-  window.location.href = '/payment.html';
+  window.location.href = 'payment.html';
 }
 
 function renderVideos(files, lockInfo){

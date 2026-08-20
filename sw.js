@@ -15,10 +15,10 @@ const CACHE_IMAGES  = 'mv-images-v1';
 
 // File yang di-precache saat SW pertama kali install
 const SHELL_URLS = [
-  '/',
-  '/index.html',
-  '/payment.html',
-  '/offline.html'   // halaman fallback offline (dibuat terpisah)
+  './',
+  './index.html',
+  './payment.html',
+  './offline.html'   // halaman fallback offline (dibuat terpisah)
   // FIX: /kontak.html & /syarat-ketentuan.html tidak ada sebagai file terpisah
   // (keduanya sudah jadi modal di dalam index.html), dihapus dari precache
 ];
@@ -146,7 +146,7 @@ self.addEventListener('fetch', event => {
         return fetch(request).then(response => {
           if (response.ok) cacheWithTTL(CACHE_IMAGES, request, response.clone(), 7 * 86400);
           return response;
-        }).catch(() => caches.match('/offline.html'));
+        }).catch(() => caches.match('./offline.html'));
       })
     );
     return;
@@ -182,7 +182,7 @@ self.addEventListener('fetch', event => {
         if (cached) return cached;
         // Fallback ke offline page untuk navigasi HTML
         if (request.mode === 'navigate') {
-          return caches.match('/offline.html');
+          return caches.match('./offline.html');
         }
         return new Response('Tidak ada koneksi.', { status: 503 });
       })
@@ -200,7 +200,7 @@ self.addEventListener('push', event => {
     body: data.body || '',
     icon: 'https://layarbiru.xyz/logo.png',
     badge: 'https://layarbiru.xyz/logo.png',
-    data: { url: data.url || '/' },
+    data: { url: data.url || './' },
     vibrate: [200, 100, 200]
   };
   event.waitUntil(
@@ -210,7 +210,7 @@ self.addEventListener('push', event => {
 
 self.addEventListener('notificationclick', event => {
   event.notification.close();
-  const targetUrl = event.notification.data?.url || '/';
+  const targetUrl = event.notification.data?.url || './';
   event.waitUntil(
     clients.matchAll({ type: 'window' }).then(windowClients => {
       for (const client of windowClients) {

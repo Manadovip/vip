@@ -19,7 +19,7 @@
 <link rel="icon" type="image/png" href="https://layarbiru.xyz/logo.png">
 
 <!-- ===== PWA ===== -->
-<link rel="manifest" href="/manifest.json">
+<link rel="manifest" href="manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -720,7 +720,7 @@
     // ── Registrasi SW ──────────────────────────────────────────────────────
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+        navigator.serviceWorker.register('sw.js', { scope: './' })
           .then(function (reg) {
             console.log('[PWA] SW terdaftar:', reg.scope);
             reg.addEventListener('updatefound', function () {
