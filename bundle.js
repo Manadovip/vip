@@ -2718,7 +2718,18 @@ modalVideo.addEventListener('loadedmetadata', updateProgressUI);
 modalVideo.addEventListener('waiting', () => modalLoading.classList.remove('hidden'));
 modalVideo.addEventListener('playing', () => modalLoading.classList.add('hidden'));
 modalVideo.addEventListener('canplay', () => modalLoading.classList.add('hidden'));
-modalVideo.addEventListener('error', () => fallbackToDriveIframe());
+modalVideo.addEventListener('error', () => {
+  const retriesLeft = Number(modalVideo.dataset.retriesLeft || '0');
+  if(retriesLeft > 0){
+    modalVideo.dataset.retriesLeft = String(retriesLeft - 1);
+    setTimeout(() => {
+      modalVideo.load();
+      modalVideo.play().catch(() => {});
+    }, 800);
+  } else {
+    fallbackToDriveIframe();
+  }
+});
 
 btnFullscreen.addEventListener('click', () => {
   if(document.fullscreenElement || document.webkitFullscreenElement){
@@ -2733,34 +2744,55 @@ btnFullscreen.addEventListener('click', () => {
 });
 
 function fallbackToDriveIframe(){
-  // Kalau streaming custom gagal (misal proxy lagi bermasalah), video tetap
-  // bisa ditonton lewat iframe preview Drive biasa sebagai jaring pengaman.
+  // Kalau streaming custom gagal setelah dicoba ulang, tampilkan pesan error
+  // bertema situs sendiri (bukan lagi tampilan asli Google Drive) dengan
+  // opsi coba lagi.
   modalVideo.style.display = 'none';
   videoControls.style.display = 'none';
   videoCenterPlay.style.display = 'none';
-  modalIframe.style.display = 'block';
-  modalLoading.classList.remove('hidden');
-  modalIframe.onload = () => modalLoading.classList.add('hidden');
-  modalIframe.src = modalIframe.dataset.fallbackSrc || '';
+  modalIframe.style.display = 'none';
+  modalLoading.classList.add('hidden');
+
+  let errBox = document.getElementById('modalStreamError');
+  if(!errBox){
+    errBox = document.createElement('div');
+    errBox.id = 'modalStreamError';
+    errBox.className = 'modal-stream-error';
+    errBox.innerHTML = `
+      <p>Video sedang tidak bisa dimuat. Coba lagi sebentar lagi.</p>
+      <button type="button" id="modalStreamRetryBtn">Coba Lagi</button>
+    `;
+    modalPlayerWrap.appendChild(errBox);
+    document.getElementById('modalStreamRetryBtn').addEventListener('click', () => {
+      const { fileId, fileName, source } = modalVideo.dataset;
+      if(fileId) openVideoFullscreen(fileId, fileName, source);
+    });
+  }
+  errBox.style.display = 'flex';
 }
 
 function openVideoFullscreen(fileId, fileName, source) {
   fullscreenModal.classList.add('active');
   document.body.style.overflow = 'hidden';
 
-  // Reset ke tampilan player custom (kalau sebelumnya sempat fallback ke iframe)
+  // Reset ke tampilan player custom (kalau sebelumnya sempat menampilkan error)
   modalVideo.style.display = 'block';
   videoControls.style.display = 'block';
   videoCenterPlay.style.display = 'flex';
   modalIframe.style.display = 'none';
   modalIframe.src = '';
+  const errBox = document.getElementById('modalStreamError');
+  if(errBox) errBox.style.display = 'none';
 
   modalLoading.classList.remove('hidden');
   videoProgressFill.style.width = '0%';
   videoTimeEl.textContent = '0:00 / 0:00';
   updatePlayIcon();
 
-  modalIframe.dataset.fallbackSrc = `https://drive.google.com/file/d/${fileId}/preview`;
+  modalVideo.dataset.fileId = fileId;
+  modalVideo.dataset.fileName = fileName;
+  modalVideo.dataset.source = source;
+  modalVideo.dataset.retriesLeft = '2';
   modalVideo.src = `${DRIVE_PROXY_URL}?mode=stream&source=${encodeURIComponent(source)}&fileId=${encodeURIComponent(fileId)}&name=${encodeURIComponent(getCookie('visitorName') || '')}`;
   modalVideo.load();
   modalVideo.play().catch(() => { /* autoplay diblokir, tinggal tekan play manual */ });

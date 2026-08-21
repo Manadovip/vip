@@ -398,7 +398,15 @@
     width:100%; height:100%; border:0;
   }
   .card .frame img{
-    width:100%; height:100%; object-fit:cover; display:block;
+    width:112%; height:112%; object-fit:cover; display:block;
+    position:absolute; top:-6%; left:-6%;
+    filter:saturate(1.02);
+  }
+  .card .frame::after{
+    content:'';
+    position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,0.55) 100%);
+    pointer-events:none;
   }
   .card .frame .noThumb{
     width:100%; height:100%;
@@ -422,6 +430,26 @@
     transform:scale(1.08);
   }
   .card .playBtn svg{ margin-left:2px; width:16px; height:16px; }
+  .modal-stream-error{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:14px; padding:24px; text-align:center;
+    background:linear-gradient(160deg, var(--bg-elev), #0a1210);
+    color:#cfd8d4; z-index:20;
+  }
+  .modal-stream-error p{ margin:0; font-size:14px; opacity:0.85; max-width:320px; }
+  .modal-stream-error button{
+    background:rgba(255,184,0,0.12);
+    border:1px solid rgba(255,184,0,0.5);
+    color:var(--amber);
+    padding:9px 20px; border-radius:999px;
+    font-size:13px; font-weight:600; cursor:pointer;
+    transition:background 0.2s ease, transform 0.2s ease;
+  }
+  .modal-stream-error button:hover{
+    background:rgba(255,184,0,0.2);
+    transform:translateY(-1px);
+  }
   .empty, .error{
     grid-column:1 / -1;
     text-align:center;
