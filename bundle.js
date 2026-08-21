@@ -2732,15 +2732,12 @@ modalVideo.addEventListener('error', () => {
 });
 
 btnFullscreen.addEventListener('click', () => {
-  if(document.fullscreenElement || document.webkitFullscreenElement){
-    (document.exitFullscreen || document.webkitExitFullscreen).call(document);
-  } else if(modalPlayerWrap.requestFullscreen){
-    modalPlayerWrap.requestFullscreen().catch(() => {});
-  } else if(modalPlayerWrap.webkitRequestFullscreen){
-    modalPlayerWrap.webkitRequestFullscreen();
-  } else if(modalVideo.webkitEnterFullscreen){
-    modalVideo.webkitEnterFullscreen(); // fallback khusus iOS Safari
-  }
+  // Pakai CSS custom (bukan Fullscreen API bawaan browser) supaya Chrome
+  // Android/iOS tidak menambahkan toolbar native (CC/kecepatan/gear) di
+  // atas kontrol video custom milik situs sendiri.
+  const isFull = modalContent.classList.toggle('fullscreen');
+  fullscreenModal.classList.toggle('modal-fullscreen-active', isFull);
+  btnFullscreen.classList.toggle('is-active', isFull);
 });
 
 function fallbackToDriveIframe(){
@@ -2792,10 +2789,10 @@ function openVideoFullscreen(fileId, fileName, source) {
 }
 
 function closeFullscreenModal() {
-  if(document.fullscreenElement || document.webkitFullscreenElement){
-    (document.exitFullscreen || document.webkitExitFullscreen).call(document);
-  }
   fullscreenModal.classList.remove('active');
+  fullscreenModal.classList.remove('modal-fullscreen-active');
+  modalContent.classList.remove('fullscreen');
+  btnFullscreen.classList.remove('is-active');
 
   modalVideo.pause();
   modalVideo.removeAttribute('src');
