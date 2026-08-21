@@ -2744,31 +2744,24 @@ btnFullscreen.addEventListener('click', () => {
 });
 
 function fallbackToDriveIframe(){
-  // Kalau streaming custom gagal setelah dicoba ulang, tampilkan pesan error
-  // bertema situs sendiri (bukan lagi tampilan asli Google Drive) dengan
-  // opsi coba lagi.
+  // Kalau streaming custom gagal setelah dicoba ulang, tetap tampilkan video
+  // lewat iframe preview Drive biasa sebagai jaring pengaman terakhir supaya
+  // video tetap bisa ditonton.
+  const fileId = modalVideo.dataset.fileId;
   modalVideo.style.display = 'none';
   videoControls.style.display = 'none';
   videoCenterPlay.style.display = 'none';
-  modalIframe.style.display = 'none';
-  modalLoading.classList.add('hidden');
+  const errBox = document.getElementById('modalStreamError');
+  if(errBox) errBox.style.display = 'none';
 
-  let errBox = document.getElementById('modalStreamError');
-  if(!errBox){
-    errBox = document.createElement('div');
-    errBox.id = 'modalStreamError';
-    errBox.className = 'modal-stream-error';
-    errBox.innerHTML = `
-      <p>Video sedang tidak bisa dimuat. Coba lagi sebentar lagi.</p>
-      <button type="button" id="modalStreamRetryBtn">Coba Lagi</button>
-    `;
-    modalPlayerWrap.appendChild(errBox);
-    document.getElementById('modalStreamRetryBtn').addEventListener('click', () => {
-      const { fileId, fileName, source } = modalVideo.dataset;
-      if(fileId) openVideoFullscreen(fileId, fileName, source);
-    });
+  if(!fileId){
+    modalLoading.classList.add('hidden');
+    return;
   }
-  errBox.style.display = 'flex';
+  modalIframe.style.display = 'block';
+  modalLoading.classList.remove('hidden');
+  modalIframe.onload = () => modalLoading.classList.add('hidden');
+  modalIframe.src = `https://drive.google.com/file/d/${encodeURIComponent(fileId)}/preview`;
 }
 
 function openVideoFullscreen(fileId, fileName, source) {
