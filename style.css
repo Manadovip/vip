@@ -1115,19 +1115,13 @@
   .pw-modal{
     display:none;
     position:fixed; inset:0;
-    background:var(--bg);
+    background:rgba(6,10,8,0.92);
     z-index:21000;
-    overflow-y:auto;
-    -webkit-overflow-scrolling:touch;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
   }
-  .pw-modal.active{
-    display:block;
-    animation: pwPageIn 0.26s cubic-bezier(0.22,1,0.36,1);
-  }
-  @keyframes pwPageIn{
-    from{ opacity:0; transform:translateY(18px); }
-    to{ opacity:1; transform:translateY(0); }
-  }
+  .pw-modal.active{ display:flex; }
 
   .pw-box{
     max-width:340px;
@@ -1150,6 +1144,24 @@
   }
 
   /* ===== NOTIF / RIWAYAT / TESTI / PROFIL — tampil sebagai halaman penuh (bukan popup) ===== */
+  .pw-page-modal{
+    display:none;
+    background:var(--bg);
+    align-items:initial;
+    justify-content:initial;
+    padding:0;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  .pw-page-modal.active{
+    display:block;
+    animation: pwPageIn 0.26s cubic-bezier(0.22,1,0.36,1);
+  }
+  @keyframes pwPageIn{
+    from{ opacity:0; transform:translateY(18px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
   .profile-box{
     max-width:560px;
     width:100%;
