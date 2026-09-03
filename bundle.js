@@ -876,12 +876,15 @@ async function renderNotifList(){
     return;
   }
   notifList.innerHTML = list.map(n => `
-    <div class="profile-payment-item">
-      <div class="profile-payment-item-top">
-        <span class="ppn-name">${escapeHtml(n.title)}</span>
+    <div class="notif-item">
+      <div class="notif-item-icon">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
       </div>
-      <div class="notif-message">${escapeHtml(n.message)}</div>
-      <span class="ppn-price">${notifTimeAgo(n.created_at)}</span>
+      <div class="notif-item-body">
+        <div class="notif-item-title">${escapeHtml(n.title)}</div>
+        <div class="notif-item-msg">${escapeHtml(n.message)}</div>
+        <div class="notif-item-time">${notifTimeAgo(n.created_at)}</div>
+      </div>
     </div>
   `).join('');
   // Tandai semua sudah dibaca (id terbesar) begitu daftar dibuka.
@@ -1356,14 +1359,22 @@ async function renderHistoryInto(listEl){
         expiryHtml = `<span class="ppn-expiry permanent">♾️ Permanen</span>`;
       }
     }
+    const statusIcon = r.status === 'approved'
+      ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+      : r.status === 'rejected'
+        ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'
+        : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
     return `
-      <div class="profile-payment-item">
-        <div class="profile-payment-item-top">
-          <span class="ppn-name">${escapeHtml(r.folderName)}</span>
-          <span class="profile-payment-badge ${badge.cls}">${badge.text}</span>
+      <div class="notif-item history-item">
+        <div class="notif-item-icon status-${badge.cls}">${statusIcon}</div>
+        <div class="notif-item-body">
+          <div class="profile-payment-item-top">
+            <span class="ppn-name">${escapeHtml(r.folderName)}</span>
+            <span class="profile-payment-badge ${badge.cls}">${badge.text}</span>
+          </div>
+          <span class="ppn-price">${formatRupiah(r.price)} · ${timeAgo(r.requestedAt)}</span>
+          ${expiryHtml}
         </div>
-        <span class="ppn-price">${formatRupiah(r.price)} · ${timeAgo(r.requestedAt)}</span>
-        ${expiryHtml}
       </div>
     `;
   }).join('');
