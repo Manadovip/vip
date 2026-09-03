@@ -37,8 +37,11 @@
   }
 
   /* Tombol testimoni — statis di dalam header (bukan overlay/floating),
-     jadi tetap diam di posisi atas halaman, ikut mengalir bersama header. */
-  .header-testi-btn{
+     jadi tetap diam di posisi atas halaman, ikut mengalir bersama header.
+     Selector ganda (.notif-bell-btn.header-testi-btn) sengaja dipakai supaya
+     posisinya menang dari aturan .notif-bell-btn { position:relative }
+     yang didefinisikan lebih belakang di file ini. */
+  .notif-bell-btn.header-testi-btn{
     position:absolute;
     top:20px;
     right:20px;
@@ -1374,8 +1377,6 @@
     display:flex;
     flex-direction:column;
     gap:8px;
-    max-height:220px;
-    overflow-y:auto;
   }
   .profile-payments-empty{
     color:var(--text-dim);
@@ -2324,7 +2325,7 @@
   @media (max-width: 480px) {
     main{ padding:24px 16px calc(92px + env(safe-area-inset-bottom, 0px)); }
     header{ padding:22px 58px 22px 16px; }
-    .header-testi-btn{ top:18px; right:16px; }
+    .notif-bell-btn.header-testi-btn{ top:18px; right:16px; }
     .top-float-actions{ top:14px; right:14px; }
     .bottom-navbar{ padding:0 10px calc(10px + env(safe-area-inset-bottom, 0px)); }
     .folders{ gap:10px; }
