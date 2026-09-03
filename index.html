@@ -245,9 +245,50 @@
 
   <div class="filmstrip"></div>
 
-  <!-- profileModal dikosongkan — profil sekarang inline di main via bottom nav -->
   <div class="pw-modal" id="profileModal">
-    <button id="profileCloseBtn" style="display:none;" aria-label="Tutup profil"></button>
+    <div class="profile-box profile-sheet-box">
+      <button class="profile-box-close" id="profileCloseBtn" aria-label="Tutup profil">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+
+      <!-- Hero: avatar + nama + badge -->
+      <div class="profil-hero">
+        <div class="profil-avatar-wrap">
+          <div class="profile-avatar" id="profileAvatar">
+            <span id="profileAvatarInitial">?</span>
+          </div>
+          <span class="vip-badge" id="profileVipBadge" style="display:none;">👑 VIP</span>
+        </div>
+        <div class="profil-hero-name" id="profileNameText">Pengunjung</div>
+        <div class="profil-hero-sub">Member Manado Vip</div>
+      </div>
+
+      <!-- Card keamanan akun -->
+      <div class="profile-cards">
+        <div class="profile-card" id="profileSecuritySection">
+          <div class="profile-card-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            Keamanan Akun
+          </div>
+          <div id="profileSecurityInfo" class="profil-security-info">Memuat...</div>
+          <div id="profileSecurityForm" class="profile-security-form" style="display:none;">
+            <input type="password" class="gate-input" id="profileOldPasswordInput" placeholder="Password lama" style="display:none;">
+            <input type="password" class="gate-input" id="profileNewPasswordInput" placeholder="Password baru">
+            <input type="password" class="gate-input" id="profileNewPasswordConfirm" placeholder="Ulangi password baru">
+            <div class="gate-error" id="profileSecurityError"></div>
+            <button class="gate-btn" id="profileSecuritySubmitBtn">Simpan Password</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tombol keluar -->
+      <div class="profile-actions" style="margin-top:4px;">
+        <button class="gate-btn profile-logout-btn" id="profileLogoutBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Keluar dari Akun
+        </button>
+      </div>
+    </div>
   </div>
 
   <div class="pw-modal" id="notifModal">
@@ -354,47 +395,6 @@
         <span id="folderPaymentNoticeText"></span>
       </div>
       <div class="grid" id="grid"></div>
-    </div>
-    <!-- Profil inline section (bottom nav) -->
-    <div id="profilSection" style="display:none;">
-
-      <!-- Hero: avatar + nama + badge -->
-      <div class="profil-hero">
-        <div class="profil-avatar-wrap">
-          <div class="profile-avatar" id="profileAvatar">
-            <span id="profileAvatarInitial">?</span>
-          </div>
-          <span class="vip-badge" id="profileVipBadge" style="display:none;">👑 VIP</span>
-        </div>
-        <div class="profil-hero-name" id="profileNameText">Pengunjung</div>
-        <div class="profil-hero-sub">Member Manado Vip</div>
-      </div>
-
-      <!-- Card keamanan akun -->
-      <div class="profile-cards">
-        <div class="profile-card" id="profileSecuritySection">
-          <div class="profile-card-title">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-            Keamanan Akun
-          </div>
-          <div id="profileSecurityInfo" class="profil-security-info">Memuat...</div>
-          <div id="profileSecurityForm" class="profile-security-form" style="display:none;">
-            <input type="password" class="gate-input" id="profileOldPasswordInput" placeholder="Password lama" style="display:none;">
-            <input type="password" class="gate-input" id="profileNewPasswordInput" placeholder="Password baru">
-            <input type="password" class="gate-input" id="profileNewPasswordConfirm" placeholder="Ulangi password baru">
-            <div class="gate-error" id="profileSecurityError"></div>
-            <button class="gate-btn" id="profileSecuritySubmitBtn">Simpan Password</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tombol keluar -->
-      <div class="profile-actions" style="margin-top:4px;">
-        <button class="gate-btn profile-logout-btn" id="profileLogoutBtn">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-          Keluar dari Akun
-        </button>
-      </div>
     </div>
 
   </main>

@@ -819,8 +819,6 @@ function hideUserBadge(){
   if(historyBtn) historyBtn.style.display = 'none';
   const historyModalEl = document.getElementById('historyModal');
   if(historyModalEl) historyModalEl.classList.remove('active');
-  var profilSectionEl = document.getElementById('profilSection');
-  if(profilSectionEl) profilSectionEl.style.display = 'none';
 }
 
 // Cek pemberitahuan baru & perbarui titik merah di ikon lonceng.
@@ -1132,15 +1130,20 @@ profileSecuritySubmitBtn.addEventListener('click', async () => {
 });
 
 profileCornerBtn.addEventListener('click', () => {
-  document.getElementById('profilSection').style.display = 'block';
+  profileModal.classList.add('active');
   renderProfileSecurity();
 });
 profileCloseBtn.addEventListener('click', () => {
+  profileModal.classList.remove('active');
   if(profilePaymentsPollInterval){ clearInterval(profilePaymentsPollInterval); profilePaymentsPollInterval = null; }
 });
+if(profileModal){
+  profileModal.addEventListener('click', (e) => {
+    if(e.target === profileModal) profileModal.classList.remove('active');
+  });
+}
 profileLogoutBtn.addEventListener('click', () => {
-  var profilSection = document.getElementById('profilSection');
-  if(profilSection) profilSection.style.display = 'none';
+  profileModal.classList.remove('active');
   if(profilePaymentsPollInterval){ clearInterval(profilePaymentsPollInterval); profilePaymentsPollInterval = null; }
   logoutVisitor();
 });

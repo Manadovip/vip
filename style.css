@@ -1033,6 +1033,30 @@
     padding:24px;
   }
   .pw-modal.active{ display:flex; }
+
+  /* ===== PROFIL MODAL — muncul sebagai bottom sheet (slide dari bawah) ===== */
+  #profileModal{
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0;
+    animation: profileSheetBackdrop 0.28s ease;
+  }
+  @keyframes profileSheetBackdrop{
+    from{ background: rgba(6,10,8,0); }
+    to{ background: rgba(6,10,8,0.92); }
+  }
+  #profileModal .profile-sheet-box{
+    width: 100%;
+    max-width: 460px;
+    max-height: 90vh;
+    border-radius: 20px 20px 0 0;
+    padding-bottom: max(26px, env(safe-area-inset-bottom, 0px));
+    animation: profileSheetSlideUp 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  @keyframes profileSheetSlideUp{
+    from{ transform: translateY(100%); }
+    to{ transform: translateY(0); }
+  }
   .pw-box{
     max-width:340px;
     width:100%;
