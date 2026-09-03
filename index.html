@@ -439,6 +439,25 @@
       });
     }
     refresh();
+
+    // Pill navbar & tombol pasang-aplikasi cuma relevan di halaman utama —
+    // sembunyikan otomatis saat layar login (gate) atau dashboard admin aktif.
+    var gateOverlayEl = document.getElementById('gateOverlay');
+    var adminDashboardEl = document.getElementById('adminDashboard');
+    var bottomNavEl = document.getElementById('bottomNavbar');
+    var floatActionsEl = document.querySelector('.top-float-actions');
+    function syncChromeVisibility(){
+      var gateOpen = !gateOverlayEl || gateOverlayEl.style.display !== 'none';
+      var adminOpen = !!(adminDashboardEl && adminDashboardEl.style.display !== 'none');
+      var shouldHide = gateOpen || adminOpen;
+      if(bottomNavEl) bottomNavEl.style.display = shouldHide ? 'none' : '';
+      if(floatActionsEl) floatActionsEl.style.display = shouldHide ? 'none' : '';
+    }
+    [gateOverlayEl, adminDashboardEl].forEach(function(el){
+      if(!el) return;
+      new MutationObserver(syncChromeVisibility).observe(el, { attributes: true, attributeFilter: ['style'] });
+    });
+    syncChromeVisibility();
   })();
   </script>
 
