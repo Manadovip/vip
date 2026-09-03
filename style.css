@@ -1095,7 +1095,9 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    background:rgba(255,255,255,0.04);
+    background:rgba(10,18,14,0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     border:1px solid var(--line);
     border-radius:50%;
     color:var(--text-dim);
@@ -1108,6 +1110,9 @@
   /* ===== PROFIL SECTION — PREMIUM REDESIGN ===== */
 
   /* Hero banner: avatar terpusat + nama + badge */
+  #profileModal .profil-hero {
+    margin-top: 30px;
+  }
   .profil-hero {
     position: relative;
     text-align: center;
