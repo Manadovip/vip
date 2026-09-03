@@ -783,9 +783,11 @@ function showUserBadge(name){
   profileNameText.textContent = name;
   // Tombol topbar: hanya Testimoni yang tetap di topbar
   // Profil & Notifikasi sudah dipindah ke bottom nav
-  profileCornerBtn.style.display = 'none';
-  if(notifBellBtn) notifBellBtn.style.display = 'none';
+  profileCornerBtn.style.display = 'flex';
+  if(notifBellBtn) notifBellBtn.style.display = 'flex';
   if(testiBtn) testiBtn.style.display = 'flex';
+  const historyBtn = document.getElementById('historyBtn');
+  if(historyBtn) historyBtn.style.display = 'flex';
 
   const initial = avatarInitial(name);
   const color = avatarColorFor(name.trim().toLowerCase());
@@ -794,12 +796,6 @@ function showUserBadge(name){
   profileAvatar.style.background = color;
   const profileAvatarInitial = document.getElementById('profileAvatarInitial');
   if(profileAvatarInitial) profileAvatarInitial.textContent = initial;
-
-  // Tampilkan bottom navigation bar
-  const bottomNav = document.getElementById('bottomNav');
-  const bnAvatar = document.getElementById('bnAvatar');
-  if(bottomNav){ bottomNav.classList.add('visible'); document.body.classList.add('has-bottom-nav'); }
-  if(bnAvatar){ bnAvatar.style.background = color; }
 
   refreshNotifBadge();
   updateVipBadge();
@@ -819,14 +815,12 @@ function hideUserBadge(){
   if(notifPollInterval){ clearInterval(notifPollInterval); notifPollInterval = null; }
   if(vipBadgePollInterval){ clearInterval(vipBadgePollInterval); vipBadgePollInterval = null; }
 
-  // Sembunyikan bottom navigation bar
-  const bottomNav = document.getElementById('bottomNav');
-  if(bottomNav){ bottomNav.classList.remove('visible'); document.body.classList.remove('has-bottom-nav'); }
-  // Sembunyikan inline sections
-  ['profilSection','notifikasiSection','historySection'].forEach(function(id){
-    var el = document.getElementById(id);
-    if(el) el.style.display = 'none';
-  });
+  const historyBtn = document.getElementById('historyBtn');
+  if(historyBtn) historyBtn.style.display = 'none';
+  const historyModalEl = document.getElementById('historyModal');
+  if(historyModalEl) historyModalEl.classList.remove('active');
+  var profilSectionEl = document.getElementById('profilSection');
+  if(profilSectionEl) profilSectionEl.style.display = 'none';
 }
 
 // Cek pemberitahuan baru & perbarui titik merah di ikon lonceng.
@@ -953,6 +947,15 @@ if(testiBtn){
     testiModal.classList.add('active');
     if(testiError) testiError.textContent = '';
     renderTestiList();
+  });
+}
+
+const historyBtn = document.getElementById('historyBtn');
+if(historyBtn){
+  historyBtn.addEventListener('click', () => {
+    const historyModalEl = document.getElementById('historyModal');
+    if(historyModalEl) historyModalEl.classList.add('active');
+    renderHistoryModal();
   });
 }
 if(testiCloseBtn){
@@ -1402,116 +1405,6 @@ async function renderNotifInto(listEl){
   if(historyModal)    historyModal.addEventListener('click', function(e){ if(e.target === historyModal) historyModal.classList.remove('active'); });
 })();
 
-// ===== BOTTOM NAVIGATION WIRING =====
-(function(){
-  var MAIN_SECTIONS = ['foldersSection','videosSection','notifikasiSection','historySection','profilSection'];
-
-  // Tab aktif saat ini: 'dashboard' | 'notifikasi' | 'history' | 'profil'
-  var currentTab = 'dashboard';
-
-  function showSection(id){
-    MAIN_SECTIONS.forEach(function(s){
-      var el = document.getElementById(s);
-      if(el) el.style.display = 'none';
-    });
-    var target = document.getElementById(id);
-    if(target) target.style.display = 'block';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  function setBottomActive(id){
-    document.querySelectorAll('.bottom-nav-item').forEach(function(btn){ btn.classList.remove('active'); });
-    var el = document.getElementById(id);
-    if(el) el.classList.add('active');
-  }
-
-  // Pindah ke tab dashboard tanpa push history (dipakai saat popstate)
-  function goToDashboardSilent(){
-    currentTab = 'dashboard';
-    setBottomActive('bnDashboard');
-    ['notifikasiSection','historySection','profilSection'].forEach(function(s){
-      var el = document.getElementById(s);
-      if(el) el.style.display = 'none';
-    });
-    // Tampilkan kembali section folder/video yang relevan
-    var foldersEl = document.getElementById('foldersSection');
-    var videosEl  = document.getElementById('videosSection');
-    if(foldersEl && foldersEl.innerHTML.trim() !== '') foldersEl.style.display = 'block';
-    else if(videosEl) videosEl.style.display = 'block';
-  }
-
-  // Saat tombol back ditekan dan state menunjuk ke tab non-dashboard,
-  // kembali ke dashboard tanpa benar-benar menavigasi keluar.
-  window.addEventListener('popstate', function(e){
-    if(e.state && e.state._bnTab && e.state._bnTab !== 'dashboard'){
-      // popstate ini dari tab non-dashboard — cukup kembali ke dashboard
-      goToDashboardSilent();
-    }
-    // Jika state tidak punya _bnTab, biarkan handler popstate di app.js
-    // yang menangani navigasi folder seperti biasa.
-  });
-
-  var bnDashboard  = document.getElementById('bnDashboard');
-  var bnNotifikasi = document.getElementById('bnNotifikasi');
-  var bnHistory    = document.getElementById('bnHistory');
-  var bnProfil     = document.getElementById('bnProfil');
-
-  // Dashboard — kembali ke folder utama
-  if(bnDashboard){
-    bnDashboard.addEventListener('click', function(){
-      currentTab = 'dashboard';
-      setBottomActive('bnDashboard');
-      var brandBtn = document.getElementById('brandHomeBtn');
-      if(brandBtn) brandBtn.click();
-      // Sembunyikan section inline kalau sedang terbuka
-      ['notifikasiSection','historySection','profilSection'].forEach(function(s){
-        var el = document.getElementById(s);
-        if(el) el.style.display = 'none';
-      });
-    });
-  }
-
-  // Notifikasi — tampil inline di main
-  if(bnNotifikasi){
-    bnNotifikasi.addEventListener('click', function(){
-      if(currentTab !== 'notifikasi'){
-        history.pushState({ _bnTab: 'notifikasi' }, '');
-        currentTab = 'notifikasi';
-      }
-      setBottomActive('bnNotifikasi');
-      showSection('notifikasiSection');
-      var inlineList = document.getElementById('inlineNotifList');
-      if(inlineList) renderNotifInto(inlineList);
-    });
-  }
-
-  // History — tampil inline di main
-  if(bnHistory){
-    bnHistory.addEventListener('click', function(){
-      if(currentTab !== 'history'){
-        history.pushState({ _bnTab: 'history' }, '');
-        currentTab = 'history';
-      }
-      setBottomActive('bnHistory');
-      showSection('historySection');
-      var inlineList = document.getElementById('inlineHistoryList');
-      if(inlineList) renderHistoryInto(inlineList);
-    });
-  }
-
-  // Profil — tampil inline di main
-  if(bnProfil){
-    bnProfil.addEventListener('click', function(){
-      if(currentTab !== 'profil'){
-        history.pushState({ _bnTab: 'profil' }, '');
-        currentTab = 'profil';
-      }
-      setBottomActive('bnProfil');
-      showSection('profilSection');
-      renderProfileSecurity();
-    });
-  }
-})();
 /* ==========================================================================
    FILE 2 / 3: admin.js
    Berisi: dashboard admin (player online, permintaan pembayaran, atur
@@ -2922,11 +2815,9 @@ function renderVideos(files, lockInfo){
 }
 
 function isOnDashboardTab(){
-  // Cek apakah bottom nav sedang aktif di Dashboard.
-  // Dipakai sebagai guard supaya loadCurrentFolder() tidak menimpa
-  // tampilan Profil/Notifikasi/History saat async-nya baru selesai.
-  const activeBtn = document.querySelector('.bottom-nav-item.active');
-  return !activeBtn || activeBtn.id === 'bnDashboard';
+  // Bottom nav sudah dihapus; Profil/Notifikasi/History kini modal/overlay
+  // terpisah yang tidak menimpa foldersSection, jadi selalu true.
+  return true;
 }
 
 function showSkeletons(){

@@ -323,6 +323,9 @@
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           <span class="notif-badge" id="notifBadge" style="display:none;"></span>
         </button>
+        <button class="notif-bell-btn" id="historyBtn" style="display:none;" aria-label="Riwayat Pembayaran">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </button>
         <button class="profile-corner-btn" id="profileCornerBtn" style="display:none;" aria-label="Profil">
           <span class="corner-avatar-text" id="cornerAvatarText"></span>
           <span class="corner-vip-badge" id="cornerVipBadge" style="display:none;" title="VIP - Akses Semua Folder">👑</span>
@@ -394,32 +397,6 @@
       </div>
     </div>
 
-    <!-- Notifikasi inline section (bottom nav) -->
-    <div id="notifikasiSection" style="display:none;">
-      <div class="notif-section-header">
-        <div class="notif-section-icon-wrap">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-        </div>
-        <div>
-          <div class="notif-section-title">Notifikasi</div>
-          <div class="notif-section-sub">Pemberitahuan dari admin untukmu</div>
-        </div>
-      </div>
-      <div class="notif-list" id="inlineNotifList">
-        <div class="profile-payments-empty">Memuat...</div>
-      </div>
-    </div>
-
-    <!-- History inline section (bottom nav) -->
-    <div id="historySection" style="display:none;">
-      <div class="section-label" style="display:flex;align-items:center;gap:8px;">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        Riwayat Pembayaran
-      </div>
-      <div class="profile-payments-list" id="inlineHistoryList" style="margin-top:12px;">
-        <div class="profile-payments-empty">Memuat...</div>
-      </div>
-    </div>
   </main>
   <footer style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 16px;padding:16px 24px;">
     <span>Diperbarui otomatis dari Google Drive setiap refresh.</span>
@@ -656,35 +633,6 @@
       </div>
     </div>
   </div>
-
-<!-- ===== BOTTOM NAVIGATION BAR ===== -->
-<nav class="bottom-nav" id="bottomNav">
-  <button class="bottom-nav-item active" id="bnDashboard" aria-label="Dashboard">
-    <div class="bn-icon-wrap">
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
-    </div>
-    <span>Dashboard</span>
-  </button>
-  <button class="bottom-nav-item" id="bnNotifikasi" aria-label="Notifikasi">
-    <span class="bn-notif-badge" id="bnNotifDot" style="display:none;"></span>
-    <div class="bn-icon-wrap">
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-    </div>
-    <span>Notifikasi</span>
-  </button>
-  <button class="bottom-nav-item" id="bnHistory" aria-label="History">
-    <div class="bn-icon-wrap">
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-    </div>
-    <span>History</span>
-  </button>
-  <button class="bottom-nav-item" id="bnProfil" aria-label="Profil">
-    <div class="bn-icon-wrap">
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-    </div>
-    <span>Profil</span>
-  </button>
-</nav>
 
 <script>
   // Muat supabase SDK + core.js + admin.js + app.js begitu versi aset
