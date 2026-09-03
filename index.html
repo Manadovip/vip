@@ -18,15 +18,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" href="https://layarbiru.xyz/logo.png">
 
-<!-- ===== PWA ===== -->
-<link rel="manifest" href="manifest.json">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Manado VIP">
-<meta name="theme-color" content="#0c1512">
-<link rel="apple-touch-icon" href="https://layarbiru.xyz/logo.png">
-<!-- ===== /PWA ===== -->
 <script>
   // Otomatis ambil "versi cache" terbaru dari server (tabel app_settings,
   // key 'asset_version') supaya style.css/core.js/admin.js/app.js selalu
@@ -350,16 +341,10 @@
     <div class="breadcrumb" id="breadcrumb"></div>
     <h1 id="pageTitle">Manado Vip</h1>
     <div class="sub"><span class="dot"></span><span id="statusText">Memuat...</span></div>
-  </header>
-
-  <div class="top-float-actions">
-    <button class="notif-bell-btn" id="pwaInstallBtn" aria-label="Pasang Aplikasi" title="Pasang Manado VIP ke layar utama">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-    </button>
-    <button class="notif-bell-btn" id="testiBtn" style="display:none;" aria-label="Testimoni">
+    <button class="notif-bell-btn header-testi-btn" id="testiBtn" style="display:none;" aria-label="Testimoni">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
     </button>
-  </div>
+  </header>
 
   <nav class="bottom-navbar" id="bottomNavbar">
     <div class="bottom-navbar-pill">
@@ -476,20 +461,18 @@
 
     refresh();
 
-    // Pill navbar & tombol pasang-aplikasi cuma relevan di halaman utama —
-    // sembunyikan otomatis saat layar login (gate) atau dashboard admin aktif.
+    // Pill navbar cuma relevan di halaman utama — sembunyikan otomatis saat
+    // layar login (gate) atau dashboard admin aktif.
     var gateOverlayEl = document.getElementById('gateOverlay');
     var adminDashboardEl = document.getElementById('adminDashboard');
     var adminPwModalEl = document.getElementById('adminPwModal');
     var bottomNavEl = document.getElementById('bottomNavbar');
-    var floatActionsEl = document.querySelector('.top-float-actions');
     function syncChromeVisibility(){
       var gateOpen = !gateOverlayEl || gateOverlayEl.style.display !== 'none';
       var adminOpen = !!(adminDashboardEl && adminDashboardEl.style.display !== 'none');
       var adminLoginOpen = !!(adminPwModalEl && adminPwModalEl.classList.contains('active'));
       var shouldHide = gateOpen || adminOpen || adminLoginOpen;
       if(bottomNavEl) bottomNavEl.style.display = shouldHide ? 'none' : '';
-      if(floatActionsEl) floatActionsEl.style.display = shouldHide ? 'none' : '';
     }
     [gateOverlayEl, adminDashboardEl].forEach(function(el){
       if(!el) return;
@@ -777,111 +760,6 @@
       document.body.appendChild(s);
     });
   });
-</script>
-<script>
-  /* ===== REGISTRASI SERVICE WORKER (PWA) ===== */
-  (function () {
-    var installBtn = document.getElementById('pwaInstallBtn');
-    var deferredPrompt = null;
-    var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-    var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-
-    // ── Sembunyikan tombol kalau sudah terpasang sebagai app ───────────────
-    if (isStandalone) {
-      if (installBtn) installBtn.style.display = 'none';
-    }
-
-    // ── Registrasi SW ──────────────────────────────────────────────────────
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function () {
-        navigator.serviceWorker.register('sw.js', { scope: './' })
-          .then(function (reg) {
-            console.log('[PWA] SW terdaftar:', reg.scope);
-            reg.addEventListener('updatefound', function () {
-              var nw = reg.installing;
-              if (!nw) return;
-              nw.addEventListener('statechange', function () {
-                if (nw.state === 'activated' && navigator.serviceWorker.controller) {
-                  window.location.reload();
-                }
-              });
-            });
-          })
-          .catch(function (err) { console.warn('[PWA] SW gagal:', err); });
-      });
-    }
-
-    // ── Simpan event install dari browser (Chrome/Edge Android & Desktop) ──
-    window.addEventListener('beforeinstallprompt', function (e) {
-      e.preventDefault();
-      deferredPrompt = e;
-    });
-
-    // ── Sembunyikan tombol setelah app terpasang ───────────────────────────
-    window.addEventListener('appinstalled', function () {
-      if (installBtn) installBtn.style.display = 'none';
-      deferredPrompt = null;
-      var tip = document.getElementById('pwa-tip');
-      if (tip) tip.remove();
-    });
-
-    // ── Tooltip panduan manual (muncul saat tombol diklik) ────────────────
-    function showTip(html) {
-      var old = document.getElementById('pwa-tip');
-      if (old) old.remove();
-      var tip = document.createElement('div');
-      tip.id = 'pwa-tip';
-      tip.style.cssText = [
-        'position:fixed','top:56px','right:12px','z-index:9999',
-        'background:#1a2820','border:1px solid #2e4438','border-radius:12px',
-        'padding:14px 16px','max-width:260px','font-size:13px',
-        'color:#eef2ee','line-height:1.6','box-shadow:0 6px 24px rgba(0,0,0,.55)'
-      ].join(';');
-      tip.innerHTML = html + '<div style="margin-top:10px;text-align:right;">'
-        + '<button onclick="document.getElementById(\'pwa-tip\').remove()" '
-        + 'style="background:none;border:none;color:#FFB800;font-size:12px;'
-        + 'font-weight:700;cursor:pointer;">Tutup</button></div>';
-      document.body.appendChild(tip);
-      // Auto-close setelah 12 detik
-      setTimeout(function () { var t = document.getElementById('pwa-tip'); if (t) t.remove(); }, 12000);
-    }
-
-    // ── Klik tombol install ────────────────────────────────────────────────
-    if (installBtn) {
-      installBtn.addEventListener('click', function () {
-        // Sudah standalone — tidak perlu install lagi
-        if (isStandalone) return;
-
-        // Chrome/Edge — native install prompt tersedia
-        if (deferredPrompt) {
-          deferredPrompt.prompt();
-          deferredPrompt.userChoice.then(function (r) {
-            if (r.outcome === 'accepted') installBtn.style.display = 'none';
-            deferredPrompt = null;
-          });
-          return;
-        }
-
-        // iOS Safari — tidak ada native prompt, tampilkan panduan
-        if (isIOS) {
-          showTip(
-            '<b style="color:#FFB800;">Cara pasang di iPhone/iPad:</b><br>' +
-            '① Tap ikon <b>Bagikan</b> (kotak dengan panah ↑) di bawah browser<br>' +
-            '② Pilih <b>"Tambahkan ke Layar Utama"</b><br>' +
-            '③ Tap <b>Tambahkan</b>'
-          );
-          return;
-        }
-
-        // Browser lain (Firefox, Samsung Internet, dll)
-        showTip(
-          '<b style="color:#FFB800;">Cara pasang aplikasi:</b><br>' +
-          'Buka menu browser (⋮ atau ≡) lalu pilih<br>' +
-          '<b>"Tambahkan ke Layar Utama"</b> atau <b>"Install App"</b>'
-        );
-      });
-    }
-  })();
 </script>
 
 <script>
