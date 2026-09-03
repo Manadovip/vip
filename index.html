@@ -391,6 +391,57 @@
       </button>
     </div>
   </nav>
+
+  <script>
+  // Sinkronkan status "aktif" pill navbar bawah dengan halaman (modal) yang
+  // sedang terbuka, supaya tab yang diklik terasa seperti pindah halaman.
+  (function(){
+    var tabMap = [
+      { modalId: 'notifModal',   tabId: 'notifBellBtn' },
+      { modalId: 'historyModal', tabId: 'historyBtn' },
+      { modalId: 'profileModal', tabId: 'profileCornerBtn' }
+    ];
+    function setActiveTab(tabEl){
+      document.querySelectorAll('.bnav-item').forEach(function(el){ el.classList.remove('active'); });
+      if(tabEl) tabEl.classList.add('active');
+    }
+    // Cuma boleh 1 "halaman" (notif/riwayat/profil) yang terbuka dalam satu waktu,
+    // supaya klik tab lain langsung berasa pindah halaman, bukan numpuk modal.
+    function closeOthers(exceptModalId){
+      tabMap.forEach(function(entry){
+        if(entry.modalId === exceptModalId) return;
+        var el = document.getElementById(entry.modalId);
+        if(el && el.classList.contains('active')) el.classList.remove('active');
+      });
+    }
+    function refresh(){
+      var homeTab = document.getElementById('brandHomeBtn');
+      var openEntry = null;
+      for(var i = 0; i < tabMap.length; i++){
+        var modalEl = document.getElementById(tabMap[i].modalId);
+        if(modalEl && modalEl.classList.contains('active')){ openEntry = tabMap[i]; break; }
+      }
+      setActiveTab(openEntry ? document.getElementById(openEntry.tabId) : homeTab);
+    }
+    tabMap.forEach(function(entry){
+      var modalEl = document.getElementById(entry.modalId);
+      if(!modalEl) return;
+      new MutationObserver(function(){
+        if(modalEl.classList.contains('active')) closeOthers(entry.modalId);
+        refresh();
+      }).observe(modalEl, { attributes: true, attributeFilter: ['class'] });
+    });
+    var brandHomeBtn = document.getElementById('brandHomeBtn');
+    if(brandHomeBtn){
+      brandHomeBtn.addEventListener('click', function(){
+        closeOthers(null);
+        setActiveTab(brandHomeBtn);
+      });
+    }
+    refresh();
+  })();
+  </script>
+
   <main>
     <div id="foldersSection">
       <div class="section-label">Folder</div>

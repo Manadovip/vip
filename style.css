@@ -53,7 +53,7 @@
     left:0;
     right:0;
     bottom:0;
-    z-index:950;
+    z-index:21050;
     display:flex;
     justify-content:center;
     padding:0 16px calc(14px + env(safe-area-inset-bottom, 0px));
@@ -1115,37 +1115,20 @@
   .pw-modal{
     display:none;
     position:fixed; inset:0;
-    background:rgba(6,10,8,0.92);
+    background:var(--bg);
     z-index:21000;
-    align-items:center;
-    justify-content:center;
-    padding:24px;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
   }
-  .pw-modal.active{ display:flex; }
+  .pw-modal.active{
+    display:block;
+    animation: pwPageIn 0.26s cubic-bezier(0.22,1,0.36,1);
+  }
+  @keyframes pwPageIn{
+    from{ opacity:0; transform:translateY(18px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
 
-  /* ===== PROFIL MODAL — muncul sebagai bottom sheet (slide dari bawah) ===== */
-  #profileModal{
-    align-items: flex-end;
-    justify-content: center;
-    padding: 0;
-    animation: profileSheetBackdrop 0.28s ease;
-  }
-  @keyframes profileSheetBackdrop{
-    from{ background: rgba(6,10,8,0); }
-    to{ background: rgba(6,10,8,0.92); }
-  }
-  #profileModal .profile-sheet-box{
-    width: 100%;
-    max-width: 460px;
-    max-height: 90vh;
-    border-radius: 20px 20px 0 0;
-    padding-bottom: max(26px, env(safe-area-inset-bottom, 0px));
-    animation: profileSheetSlideUp 0.32s cubic-bezier(0.32, 0.72, 0, 1);
-  }
-  @keyframes profileSheetSlideUp{
-    from{ transform: translateY(100%); }
-    to{ transform: translateY(0); }
-  }
   .pw-box{
     max-width:340px;
     width:100%;
@@ -1165,28 +1148,29 @@
     font-size:12px;
     margin-bottom:18px;
   }
+
+  /* ===== NOTIF / RIWAYAT / TESTI / PROFIL — tampil sebagai halaman penuh (bukan popup) ===== */
   .profile-box{
-    max-width:460px;
+    max-width:560px;
     width:100%;
-    max-height:88vh;
-    overflow-y:auto;
-    background:linear-gradient(165deg, var(--bg-elev), #0e1a15);
-    border:1px solid var(--line);
-    border-radius:20px;
-    padding:26px 22px;
+    min-height:100%;
+    margin:0 auto;
+    background:var(--bg);
+    border:none;
+    border-radius:0;
+    padding:calc(20px + env(safe-area-inset-top, 0px)) 20px calc(112px + env(safe-area-inset-bottom, 0px));
     text-align:left;
     position:relative;
   }
   .profile-box-close{
-    position:absolute;
-    top:16px; right:16px;
-    width:32px; height:32px;
+    position:sticky;
+    top:calc(4px + env(safe-area-inset-top, 0px));
+    margin-bottom:14px;
+    width:34px; height:34px;
     display:flex;
     align-items:center;
     justify-content:center;
-    background:rgba(10,18,14,0.55);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    background:var(--bg-elev);
     border:1px solid var(--line);
     border-radius:50%;
     color:var(--text-dim);
@@ -2295,7 +2279,7 @@
     .folder-card .name{ font-size:14px; }
   }
   @media (max-width: 420px) {
-    .profile-box{ padding:22px 16px; border-radius:16px; }
+    .profile-box{ padding:calc(16px + env(safe-area-inset-top, 0px)) 16px calc(108px + env(safe-area-inset-bottom, 0px)); border-radius:0; }
     .profile-avatar{ width:64px; height:64px; font-size:26px; }
     .profil-hero-name{ font-size:19px; }
     .profil-hero{ padding:28px 16px 24px; }
