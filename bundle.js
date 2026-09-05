@@ -2647,6 +2647,37 @@ btnFullscreen.addEventListener('click', () => {
   btnFullscreen.classList.toggle('is-active', isFull);
 });
 
+function activateCustomFullscreen(){
+  if(!modalContent.classList.contains('fullscreen')){
+    modalContent.classList.add('fullscreen');
+    fullscreenModal.classList.add('modal-fullscreen-active');
+    btnFullscreen.classList.add('is-active');
+  }
+}
+
+// Beberapa browser (terutama Chrome Android) punya gestur bawaan sendiri
+// (double-tap / long-press pada <video>) yang bisa memaksa video masuk ke
+// fullscreen NATIVE browser di luar kontrol JS situs -- munculnya toolbar
+// bawaan (speaker/CC/1x/gear) yang numpuk di atas kontrol custom adalah
+// akibat dari itu. Begitu kejadian, langsung keluarkan paksa dan alihkan
+// ke fullscreen CSS custom milik situs supaya kontrolnya konsisten cuma satu.
+function handleNativeFullscreenHijack(){
+  const nativeFsEl = document.fullscreenElement || document.webkitFullscreenElement;
+  if(nativeFsEl === modalVideo){
+    if(document.exitFullscreen) document.exitFullscreen().catch(() => {});
+    else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    activateCustomFullscreen();
+  }
+}
+document.addEventListener('fullscreenchange', handleNativeFullscreenHijack);
+document.addEventListener('webkitfullscreenchange', handleNativeFullscreenHijack);
+// Khusus iOS Safari: video punya fullscreen native sendiri yang tidak lewat
+// document.fullscreenElement, melainkan event webkitbeginfullscreen di video.
+modalVideo.addEventListener('webkitbeginfullscreen', () => {
+  if(modalVideo.webkitExitFullscreen) modalVideo.webkitExitFullscreen();
+  activateCustomFullscreen();
+});
+
 function fallbackToDriveIframe(){
   // Kalau streaming custom gagal setelah dicoba ulang, tetap tampilkan video
   // lewat iframe preview Drive biasa sebagai jaring pengaman terakhir supaya
