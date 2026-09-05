@@ -467,11 +467,16 @@
     var adminDashboardEl = document.getElementById('adminDashboard');
     var adminPwModalEl = document.getElementById('adminPwModal');
     var bottomNavEl = document.getElementById('bottomNavbar');
+    // Modal player video full-layar juga harus menyembunyikan pill navbar:
+    // sebelumnya cuma z-index yang diandalkan, jadi kalau ada kondisi race
+    // navbar tetap kelihatan menimpa video (bug yang dilaporkan).
+    var fullscreenModalEl = document.getElementById('fullscreenModal');
     function syncChromeVisibility(){
       var gateOpen = !gateOverlayEl || gateOverlayEl.style.display !== 'none';
       var adminOpen = !!(adminDashboardEl && adminDashboardEl.style.display !== 'none');
       var adminLoginOpen = !!(adminPwModalEl && adminPwModalEl.classList.contains('active'));
-      var shouldHide = gateOpen || adminOpen || adminLoginOpen;
+      var videoOpen = !!(fullscreenModalEl && fullscreenModalEl.classList.contains('active'));
+      var shouldHide = gateOpen || adminOpen || adminLoginOpen || videoOpen;
       if(bottomNavEl) bottomNavEl.style.display = shouldHide ? 'none' : '';
     }
     [gateOverlayEl, adminDashboardEl].forEach(function(el){
@@ -480,6 +485,9 @@
     });
     if(adminPwModalEl){
       new MutationObserver(syncChromeVisibility).observe(adminPwModalEl, { attributes: true, attributeFilter: ['class'] });
+    }
+    if(fullscreenModalEl){
+      new MutationObserver(syncChromeVisibility).observe(fullscreenModalEl, { attributes: true, attributeFilter: ['class'] });
     }
     syncChromeVisibility();
   })();

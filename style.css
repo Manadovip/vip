@@ -609,7 +609,10 @@
     background: rgba(4, 8, 6, 0.92);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
-    z-index: 9999;
+    /* Harus di atas .bottom-navbar (z-index:21050) supaya navbar bawah
+       (Beranda/Notifikasi/Riwayat/Profil) tidak numpuk/kelihatan di atas
+       player video saat modal video full-layar aktif. */
+    z-index: 21100;
     align-items: center;
     justify-content: center;
     animation: fadeIn 0.25s ease;
