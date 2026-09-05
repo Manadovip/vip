@@ -2601,88 +2601,30 @@ window.addEventListener('pointermove', (e) => {
 });
 window.addEventListener('pointerup', () => { seeking = false; });
 
-btnPlayPause.addEventListener('click', () => {
-  if(modalVideo.paused) modalVideo.play().catch(() => {});
-  else modalVideo.pause();
-});
-videoCenterPlay.addEventListener('click', () => {
-  modalVideo.play().catch(() => {});
-});
-modalVideo.addEventListener('click', () => {
-  if(modalVideo.paused) modalVideo.play().catch(() => {});
-  else modalVideo.pause();
-});
-btnSkipBack.addEventListener('click', () => {
-  modalVideo.currentTime = Math.max(0, modalVideo.currentTime - 10);
-});
-btnSkipForward.addEventListener('click', () => {
-  modalVideo.currentTime = Math.min(modalVideo.duration || Infinity, modalVideo.currentTime + 10);
-});
-modalVideo.addEventListener('play', updatePlayIcon);
-modalVideo.addEventListener('pause', updatePlayIcon);
-modalVideo.addEventListener('timeupdate', updateProgressUI);
-modalVideo.addEventListener('loadedmetadata', updateProgressUI);
-modalVideo.addEventListener('waiting', () => modalLoading.classList.remove('hidden'));
-modalVideo.addEventListener('playing', () => modalLoading.classList.add('hidden'));
-modalVideo.addEventListener('canplay', () => modalLoading.classList.add('hidden'));
-modalVideo.addEventListener('error', () => {
-  const retriesLeft = Number(modalVideo.dataset.retriesLeft || '0');
-  if(retriesLeft > 0){
-    modalVideo.dataset.retriesLeft = String(retriesLeft - 1);
-    setTimeout(() => {
-      modalVideo.load();
-      modalVideo.play().catch(() => {});
-    }, 800);
-  } else {
-    fallbackToDriveIframe();
-  }
-});
+// Kontrol custom (play/pause, skip 10 detik, progress bar, dsb) dan elemen
+// <video> milik situs sudah tidak dipakai lagi -- video sekarang selalu main
+// lewat iframe bawaan Google Drive (lihat openVideoFullscreen di bawah),
+// supaya kontrolnya cuma satu (bawaan Drive) dan tidak numpuk dengan kontrol
+// native browser lagi.
 
 btnFullscreen.addEventListener('click', () => {
-  // Pakai CSS custom (bukan Fullscreen API bawaan browser) supaya Chrome
-  // Android/iOS tidak menambahkan toolbar native (CC/kecepatan/gear) di
-  // atas kontrol video custom milik situs sendiri.
   const isFull = modalContent.classList.toggle('fullscreen');
   fullscreenModal.classList.toggle('modal-fullscreen-active', isFull);
   btnFullscreen.classList.toggle('is-active', isFull);
 });
 
-function activateCustomFullscreen(){
-  if(!modalContent.classList.contains('fullscreen')){
-    modalContent.classList.add('fullscreen');
-    fullscreenModal.classList.add('modal-fullscreen-active');
-    btnFullscreen.classList.add('is-active');
-  }
-}
+// Modal video sekarang selalu pakai iframe Google Drive (lihat
+// openVideoFullscreen di bawah), jadi tidak ada lagi <video> milik situs
+// yang bisa "dicuri" ke fullscreen native browser -- kode hijack fullscreen
+// dan fallback proxy-streaming yang dulu di sini sudah tidak diperlukan.
 
-// Beberapa browser (terutama Chrome Android) punya gestur bawaan sendiri
-// (double-tap / long-press pada <video>) yang bisa memaksa video masuk ke
-// fullscreen NATIVE browser di luar kontrol JS situs -- munculnya toolbar
-// bawaan (speaker/CC/1x/gear) yang numpuk di atas kontrol custom adalah
-// akibat dari itu. Begitu kejadian, langsung keluarkan paksa dan alihkan
-// ke fullscreen CSS custom milik situs supaya kontrolnya konsisten cuma satu.
-function handleNativeFullscreenHijack(){
-  const nativeFsEl = document.fullscreenElement || document.webkitFullscreenElement;
-  if(nativeFsEl === modalVideo){
-    if(document.exitFullscreen) document.exitFullscreen().catch(() => {});
-    else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
-    activateCustomFullscreen();
-  }
-}
-document.addEventListener('fullscreenchange', handleNativeFullscreenHijack);
-document.addEventListener('webkitfullscreenchange', handleNativeFullscreenHijack);
-// Khusus iOS Safari: video punya fullscreen native sendiri yang tidak lewat
-// document.fullscreenElement, melainkan event webkitbeginfullscreen di video.
-modalVideo.addEventListener('webkitbeginfullscreen', () => {
-  if(modalVideo.webkitExitFullscreen) modalVideo.webkitExitFullscreen();
-  activateCustomFullscreen();
-});
+function openVideoFullscreen(fileId, fileName, source) {
+  fullscreenModal.classList.add('active');
+  document.body.style.overflow = 'hidden';
 
-function fallbackToDriveIframe(){
-  // Kalau streaming custom gagal setelah dicoba ulang, tetap tampilkan video
-  // lewat iframe preview Drive biasa sebagai jaring pengaman terakhir supaya
-  // video tetap bisa ditonton.
-  const fileId = modalVideo.dataset.fileId;
+  // Kontrol custom situs (play/skip/progress bar) dimatikan total -- sekarang
+  // video selalu main lewat iframe bawaan Google Drive dengan kontrolnya
+  // sendiri, supaya tidak ada lagi kontrol dobel/numpuk dengan bawaan browser.
   modalVideo.style.display = 'none';
   videoControls.style.display = 'none';
   videoCenterPlay.style.display = 'none';
@@ -2693,37 +2635,11 @@ function fallbackToDriveIframe(){
     modalLoading.classList.add('hidden');
     return;
   }
+
   modalIframe.style.display = 'block';
   modalLoading.classList.remove('hidden');
   modalIframe.onload = () => modalLoading.classList.add('hidden');
   modalIframe.src = `https://drive.google.com/file/d/${encodeURIComponent(fileId)}/preview`;
-}
-
-function openVideoFullscreen(fileId, fileName, source) {
-  fullscreenModal.classList.add('active');
-  document.body.style.overflow = 'hidden';
-
-  // Reset ke tampilan player custom (kalau sebelumnya sempat menampilkan error)
-  modalVideo.style.display = 'block';
-  videoControls.style.display = 'block';
-  videoCenterPlay.style.display = 'flex';
-  modalIframe.style.display = 'none';
-  modalIframe.src = '';
-  const errBox = document.getElementById('modalStreamError');
-  if(errBox) errBox.style.display = 'none';
-
-  modalLoading.classList.remove('hidden');
-  videoProgressFill.style.width = '0%';
-  videoTimeEl.textContent = '0:00 / 0:00';
-  updatePlayIcon();
-
-  modalVideo.dataset.fileId = fileId;
-  modalVideo.dataset.fileName = fileName;
-  modalVideo.dataset.source = source;
-  modalVideo.dataset.retriesLeft = '2';
-  modalVideo.src = `${DRIVE_PROXY_URL}?mode=stream&source=${encodeURIComponent(source)}&fileId=${encodeURIComponent(fileId)}&name=${encodeURIComponent(getCookie('visitorName') || '')}`;
-  modalVideo.load();
-  modalVideo.play().catch(() => { /* autoplay diblokir, tinggal tekan play manual */ });
 }
 
 function closeFullscreenModal() {
@@ -2731,10 +2647,6 @@ function closeFullscreenModal() {
   fullscreenModal.classList.remove('modal-fullscreen-active');
   modalContent.classList.remove('fullscreen');
   btnFullscreen.classList.remove('is-active');
-
-  modalVideo.pause();
-  modalVideo.removeAttribute('src');
-  modalVideo.load();
 
   modalIframe.onload = null;
   modalIframe.src = '';
