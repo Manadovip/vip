@@ -99,7 +99,11 @@
   display: none;
   position: fixed;
   inset: 0;
-  z-index: 8000;
+  /* Sebelumnya 8000 -- lebih rendah dari .bottom-navbar (21050), jadi navbar
+     bawah (Beranda/Notifikasi/Riwayat/Profil) numpuk di atas modal ini dan
+     nutupin tombol WhatsApp/kontak (bug yang dilaporkan). Dinaikkan supaya
+     modal ini yang paling atas. */
+  z-index: 21150;
   background: rgba(7,13,11,0.85);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
@@ -471,12 +475,14 @@
     // sebelumnya cuma z-index yang diandalkan, jadi kalau ada kondisi race
     // navbar tetap kelihatan menimpa video (bug yang dilaporkan).
     var fullscreenModalEl = document.getElementById('fullscreenModal');
+    var kontakModalEl = document.getElementById('kontakModal');
     function syncChromeVisibility(){
       var gateOpen = !gateOverlayEl || gateOverlayEl.style.display !== 'none';
       var adminOpen = !!(adminDashboardEl && adminDashboardEl.style.display !== 'none');
       var adminLoginOpen = !!(adminPwModalEl && adminPwModalEl.classList.contains('active'));
       var videoOpen = !!(fullscreenModalEl && fullscreenModalEl.classList.contains('active'));
-      var shouldHide = gateOpen || adminOpen || adminLoginOpen || videoOpen;
+      var kontakOpen = !!(kontakModalEl && kontakModalEl.classList.contains('active'));
+      var shouldHide = gateOpen || adminOpen || adminLoginOpen || videoOpen || kontakOpen;
       if(bottomNavEl) bottomNavEl.style.display = shouldHide ? 'none' : '';
     }
     [gateOverlayEl, adminDashboardEl].forEach(function(el){
@@ -488,6 +494,9 @@
     }
     if(fullscreenModalEl){
       new MutationObserver(syncChromeVisibility).observe(fullscreenModalEl, { attributes: true, attributeFilter: ['class'] });
+    }
+    if(kontakModalEl){
+      new MutationObserver(syncChromeVisibility).observe(kontakModalEl, { attributes: true, attributeFilter: ['class'] });
     }
     syncChromeVisibility();
   })();
@@ -517,8 +526,6 @@
   </main>
   <footer style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 16px;padding:16px 24px;">
     <span>Diperbarui otomatis dari Google Drive setiap refresh.</span>
-    <span style="opacity:.4;">&middot;</span>
-    <a href="#" onclick="document.getElementById('syaratModal').classList.add('active');return false;" style="color:var(--amber,#FFB800);text-decoration:none;font-size:12px;">Syarat &amp; Ketentuan</a>
     <span style="opacity:.4;">&middot;</span>
     <a href="#" onclick="document.getElementById('kontakModal').classList.add('active');return false;" style="color:var(--amber,#FFB800);text-decoration:none;font-size:12px;">Kontak &amp; CS</a>
   </footer>

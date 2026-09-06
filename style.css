@@ -124,6 +124,20 @@
     top:-3px;
     right:-5px;
   }
+  /* Badge angka notifikasi di navbar bawah ukurannya sama kayak badge biasa
+     (16px), padahal ikon lonceng cuma 18x18px total -- jadi badge-nya
+     nutupin hampir semua bentuk lonceng, cuma nyisa sepotong kecil yang
+     kelihatan kayak bentuk aneh/nggak jelas. Diperkecil + digeser lebih ke
+     pojok supaya cuma numpuk di ujung lonceng, bukan nutupin badannya. */
+  #notifBadge.bnav-badge{
+    min-width:12px;
+    height:12px;
+    padding:0 3px;
+    font-size:8px;
+    border-width:1.5px;
+    top:-5px;
+    right:-7px;
+  }
   .bnav-item-profile .corner-vip-badge{
     bottom:-2px;
     right:-5px;
