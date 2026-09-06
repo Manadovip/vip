@@ -13,6 +13,11 @@
     color:var(--text);
     font-family:'Inter', sans-serif;
     min-height:100vh;
+    /* .bottom-navbar posisinya fixed di atas semua konten (bukan bagian
+       dari alur halaman), jadi kalau body nggak dikasih "tempat" buat itu,
+       elemen paling bawah (footer, isinya link Kontak & CS) ketutup navbar
+       pas discroll ke ujung bawah -- itu bug yang dilaporkan. */
+    padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px));
   }
   .filmstrip{
     height:2px;
