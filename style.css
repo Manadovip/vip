@@ -677,6 +677,9 @@
     flex: 1;
     background: #000;
     min-height: 0;
+    overflow: hidden; /* wajib, supaya bagian iframe yang digeser ke atas
+                          (lihat .modal-iframe) ke-crop rapi di sini, bukan
+                          numpang lewat ke luar kotak player */
   }
   .modal-player-wrap:fullscreen,
   .modal-player-wrap:-webkit-full-screen {
@@ -722,11 +725,24 @@
     background: #000;
   }
 
+  /* Google Drive selalu nampilin toolbar bawaannya sendiri (nama file, buka
+     di tab baru, download, menu titik tiga) di bagian atas embed /preview.
+     Toolbar ini nggak bisa dihilangkan lewat parameter URL atau CSS biasa
+     karena iframe-nya cross-origin (drive.google.com) -- browser blokir kita
+     "masuk" dan ubah tampilan di dalamnya. Akal-akalannya: iframe digeser ke
+     atas sejauh --gdrive-toolbar-h (jadi toolbar-nya "naik" ke luar area
+     yang kelihatan), lalu tinggi iframe ditambah sejumlah yang sama supaya
+     bagian player-nya sendiri tetap penuh menutupi kotak video. Bagian yang
+     nongol ke atas di-crop oleh overflow:hidden di .modal-player-wrap.
+     Kalau toolbar Drive masih sedikit nyisa/kepotong kebanyakan, tinggal
+     naik/turunin angka --gdrive-toolbar-h di bawah ini. */
   .modal-iframe {
+    --gdrive-toolbar-h: 56px;
     position: absolute;
-    inset: 0;
+    top: calc(-1 * var(--gdrive-toolbar-h));
+    left: 0;
     width: 100%;
-    height: 100%;
+    height: calc(100% + var(--gdrive-toolbar-h));
     border: none;
     z-index: 1;
   }
