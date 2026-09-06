@@ -2601,33 +2601,83 @@ window.addEventListener('pointermove', (e) => {
 });
 window.addEventListener('pointerup', () => { seeking = false; });
 
-// Kontrol custom (play/pause, skip 10 detik, progress bar, dsb) dan elemen
-// <video> milik situs sudah tidak dipakai lagi -- video sekarang selalu main
-// lewat iframe bawaan Google Drive (lihat openVideoFullscreen di bawah),
-// supaya kontrolnya cuma satu (bawaan Drive) dan tidak numpuk dengan kontrol
-// native browser lagi.
+// Kontrol custom (play/pause, skip 10 detik, progress bar, dsb) buat elemen
+// <video> milik situs sendiri. Video di-stream lewat drive-proxy (mode=stream)
+// supaya API key Google Drive tidak pernah kelihatan di browser -- walau
+// dengan cara ini video jadi bisa didownload orang yang cukup paham DevTools
+// (trade-off yang sudah disepakati demi kontrol tampilan penuh, tanpa toolbar
+// bawaan Google).
+
+modalVideo.addEventListener('play', updatePlayIcon);
+modalVideo.addEventListener('pause', updatePlayIcon);
+modalVideo.addEventListener('ended', updatePlayIcon);
+modalVideo.addEventListener('timeupdate', updateProgressUI);
+modalVideo.addEventListener('loadedmetadata', updateProgressUI);
+
+modalVideo.addEventListener('waiting', () => modalLoading.classList.remove('hidden'));
+modalVideo.addEventListener('playing', () => modalLoading.classList.add('hidden'));
+modalVideo.addEventListener('canplay', () => modalLoading.classList.add('hidden'));
+
+modalVideo.addEventListener('error', () => {
+  modalLoading.classList.add('hidden');
+  const errBox = document.getElementById('modalStreamError');
+  if(errBox) errBox.style.display = 'flex';
+});
+
+const modalStreamRetryBtn = document.getElementById('modalStreamRetryBtn');
+if(modalStreamRetryBtn){
+  modalStreamRetryBtn.addEventListener('click', () => {
+    const errBox = document.getElementById('modalStreamError');
+    if(errBox) errBox.style.display = 'none';
+    modalLoading.classList.remove('hidden');
+    modalVideo.load();
+    modalVideo.play().catch(() => {});
+  });
+}
+
+btnPlayPause.addEventListener('click', () => {
+  if(modalVideo.paused || modalVideo.ended){
+    modalVideo.play().catch(() => {});
+  } else {
+    modalVideo.pause();
+  }
+});
+videoCenterPlay.addEventListener('click', () => {
+  modalVideo.play().catch(() => {});
+});
+// Tap di area video (di luar tombol kontrol) sama kayak tap tombol play/pause.
+modalVideo.addEventListener('click', () => {
+  if(modalVideo.paused || modalVideo.ended){
+    modalVideo.play().catch(() => {});
+  } else {
+    modalVideo.pause();
+  }
+});
+btnSkipBack.addEventListener('click', () => {
+  modalVideo.currentTime = Math.max(0, modalVideo.currentTime - 10);
+});
+btnSkipForward.addEventListener('click', () => {
+  if(isFinite(modalVideo.duration)){
+    modalVideo.currentTime = Math.min(modalVideo.duration, modalVideo.currentTime + 10);
+  }
+});
 
 btnFullscreen.addEventListener('click', () => {
   const isFull = modalContent.classList.toggle('fullscreen');
   fullscreenModal.classList.toggle('modal-fullscreen-active', isFull);
   btnFullscreen.classList.toggle('is-active', isFull);
 });
-
-// Modal video sekarang selalu pakai iframe Google Drive (lihat
-// openVideoFullscreen di bawah), jadi tidak ada lagi <video> milik situs
-// yang bisa "dicuri" ke fullscreen native browser -- kode hijack fullscreen
-// dan fallback proxy-streaming yang dulu di sini sudah tidak diperlukan.
+// Catatan: ini fullscreen "CSS" (modal dibesarin ke ukuran layar penuh),
+// BUKAN Fullscreen API browser (requestFullscreen). Sengaja begitu supaya
+// kontrol custom kita tidak numpuk/dobel sama kontrol native yang suka
+// muncul otomatis kalau <video> masuk fullscreen/PiP beneran di HP.
 
 function openVideoFullscreen(fileId, fileName, source) {
   fullscreenModal.classList.add('active');
   document.body.style.overflow = 'hidden';
 
-  // Kontrol custom situs (play/skip/progress bar) dimatikan total -- sekarang
-  // video selalu main lewat iframe bawaan Google Drive dengan kontrolnya
-  // sendiri, supaya tidak ada lagi kontrol dobel/numpuk dengan bawaan browser.
-  modalVideo.style.display = 'none';
-  videoControls.style.display = 'none';
-  videoCenterPlay.style.display = 'none';
+  modalIframe.style.display = 'none';
+  modalIframe.src = '';
   const errBox = document.getElementById('modalStreamError');
   if(errBox) errBox.style.display = 'none';
 
@@ -2636,10 +2686,16 @@ function openVideoFullscreen(fileId, fileName, source) {
     return;
   }
 
-  modalIframe.style.display = 'block';
+  modalVideo.style.display = 'block';
+  videoControls.style.display = 'block';
   modalLoading.classList.remove('hidden');
-  modalIframe.onload = () => modalLoading.classList.add('hidden');
-  modalIframe.src = `https://drive.google.com/file/d/${encodeURIComponent(fileId)}/preview`;
+  const visitorName = getCookie('visitorName') || '';
+  modalVideo.src = `${DRIVE_PROXY_URL}?source=${encodeURIComponent(source)}&fileId=${encodeURIComponent(fileId)}&mode=stream&name=${encodeURIComponent(visitorName)}`;
+  modalVideo.load();
+  modalVideo.play().catch(() => {
+    // Autoplay diblokir browser -- biarin aja, biar user tap tombol play
+    // besar di tengah (videoCenterPlay) sendiri.
+  });
 }
 
 function closeFullscreenModal() {
@@ -2648,8 +2704,9 @@ function closeFullscreenModal() {
   modalContent.classList.remove('fullscreen');
   btnFullscreen.classList.remove('is-active');
 
-  modalIframe.onload = null;
-  modalIframe.src = '';
+  modalVideo.pause();
+  modalVideo.removeAttribute('src');
+  modalVideo.load();
 
   document.body.style.overflow = '';
 }

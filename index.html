@@ -541,6 +541,11 @@
         <video class="modal-video" id="modalVideo" playsinline webkit-playsinline preload="metadata" disablePictureInPicture disableRemotePlayback controlsList="nodownload noremoteplayback" oncontextmenu="return false;"></video>
         <iframe class="modal-iframe" id="modalIframe" style="display:none;" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
+        <div class="modal-stream-error" id="modalStreamError" style="display:none;">
+          <span>Video gagal dimuat. Coba lagi beberapa saat.</span>
+          <button class="modal-stream-retry" id="modalStreamRetryBtn" type="button">Muat Ulang</button>
+        </div>
+
         <!-- Tombol play besar di tengah, muncul cuma waktu video di-pause -->
         <button class="video-center-play" id="videoCenterPlay" aria-label="Putar video">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
