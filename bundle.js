@@ -2913,6 +2913,21 @@ function isFolderNew(folder){
   return (Date.now() - folder._newBadgeTime) < NEW_BADGE_WINDOW_MS;
 }
 
+async function fetchVisitorAccountCount(){
+  if(!dbReady()) return null;
+  try{
+    const { data, error } = await sb.rpc('get_visitor_account_count');
+    if(error){
+      console.warn('[fetchVisitorAccountCount] Supabase error:', error.message);
+      return null;
+    }
+    return typeof data === 'number' ? data : null;
+  }catch(e){
+    console.warn('[fetchVisitorAccountCount] Exception:', e);
+    return null;
+  }
+}
+
 async function loadCurrentFolder(){
   syncHistoryState();
   const current = path[path.length - 1];
@@ -3039,9 +3054,11 @@ async function loadCurrentFolder(){
     const warnSuffix = failedSources.length ? ` · ⚠️ ${failedSources.length} sumber gagal dimuat` : '';
     if(folders.length > 0){
       const visitorName = getCookie('visitorName');
+      const accountCount = await fetchVisitorAccountCount();
+      const activeUsersText = accountCount !== null ? `${accountCount} Pengguna Aktif` : `${folders.length} folder tersedia`;
       statusText.textContent = (visitorName
-        ? `Halo, ${visitorName} 👋 · ${folders.length} folder tersedia`
-        : `${folders.length} folder tersedia`) + warnSuffix;
+        ? `Halo, ${visitorName} 👋 · ${activeUsersText}`
+        : activeUsersText) + warnSuffix;
     } else {
       statusText.textContent = `${videos.length} video - terakhir dicek ${now}${warnSuffix}`;
     }
