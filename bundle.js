@@ -2672,7 +2672,7 @@ btnFullscreen.addEventListener('click', () => {
 // kontrol custom kita tidak numpuk/dobel sama kontrol native yang suka
 // muncul otomatis kalau <video> masuk fullscreen/PiP beneran di HP.
 
-function openVideoFullscreen(fileId, fileName, source) {
+function openVideoFullscreen(fileId, fileName, source, folderId) {
   fullscreenModal.classList.add('active');
   document.body.style.overflow = 'hidden';
 
@@ -2690,7 +2690,7 @@ function openVideoFullscreen(fileId, fileName, source) {
   videoControls.style.display = 'block';
   modalLoading.classList.remove('hidden');
   const visitorName = getCookie('visitorName') || '';
-  modalVideo.src = `${DRIVE_PROXY_URL}?source=${encodeURIComponent(source)}&fileId=${encodeURIComponent(fileId)}&mode=stream&name=${encodeURIComponent(visitorName)}`;
+  modalVideo.src = `${DRIVE_PROXY_URL}?source=${encodeURIComponent(source)}&fileId=${encodeURIComponent(fileId)}&mode=stream&name=${encodeURIComponent(visitorName)}&folderId=${encodeURIComponent(folderId || '')}`;
   modalVideo.load();
   modalVideo.play().catch(() => {
     // Autoplay diblokir browser -- biarin aja, biar user tap tombol play
@@ -2736,6 +2736,7 @@ function renderVideos(files, lockInfo){
     return;
   }
   const locked = !!(lockInfo && lockInfo.locked);
+  const folderId = lockInfo && lockInfo.folderId;
   videosSection.style.display = 'block';
   if(locked){
     const isPending = !!(lockInfo && lockInfo.isPending);
@@ -2817,7 +2818,7 @@ function renderVideos(files, lockInfo){
       if(locked){
         openPaymentModal(lockInfo);
       } else {
-        openVideoFullscreen(f.id, f.name, f.source);
+        openVideoFullscreen(f.id, f.name, f.source, folderId);
       }
     };
 
@@ -3031,7 +3032,7 @@ async function loadCurrentFolder(){
       }
       renderVideos(videos, { locked: !unlocked, folderId: currentId, folderName, price, isPending, activeEntry });
     } else {
-      renderVideos(videos);
+      renderVideos(videos, { folderId: currentId });
     }
 
     const now = new Date().toLocaleTimeString('id-ID');
