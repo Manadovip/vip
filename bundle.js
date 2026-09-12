@@ -1653,11 +1653,15 @@ async function renderAdminRequests(){
         ? `<span class="plan-badge-admin">${e.method.includes('1 Bulan') ? '📅 1 Bulan' : e.method.includes('Permanen') ? '♾️ Permanen' : escapeHtml(e.method)}</span>`
         : '';
       const actionsHtml = `<div class="ractions ractions-pending">
-            ${planBadge}
-            ${durationSelectHtml('dur-' + escapeHtml(e.key), planDays)}
-            <button class="rbtn approve" data-action="approve" data-key="${escapeHtml(e.key)}">✓ Setujui</button>
-            <button class="rbtn reject" data-action="reject" data-key="${escapeHtml(e.key)}">✕ Tolak</button>
-            <button class="rbtn delete icon-only" data-action="delete" data-key="${escapeHtml(e.key)}" title="Hapus" aria-label="Hapus">🗑</button>
+            <div class="ractions-meta">
+              ${planBadge}
+              ${durationSelectHtml('dur-' + escapeHtml(e.key), planDays)}
+            </div>
+            <div class="ractions-btns">
+              <button class="rbtn approve" data-action="approve" data-key="${escapeHtml(e.key)}">✓ Setujui</button>
+              <button class="rbtn reject" data-action="reject" data-key="${escapeHtml(e.key)}">✕ Tolak</button>
+              <button class="rbtn delete icon-only" data-action="delete" data-key="${escapeHtml(e.key)}" title="Hapus" aria-label="Hapus">🗑</button>
+            </div>
            </div>`;
       return `
         <div class="request-item pending">
@@ -2145,12 +2149,22 @@ if(adminTestiList){
 // Pembayaran, Harga) tidak perlu di-scroll semua sekaligus.
 let adminTabsInitialized = false;
 function switchAdminTab(tabName){
+  let activeBtn = null;
   document.querySelectorAll('.admin-tab-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.tab === tabName);
+    const isActive = btn.dataset.tab === tabName;
+    btn.classList.toggle('active', isActive);
+    if(isActive) activeBtn = btn;
   });
   document.querySelectorAll('.admin-tab-panel').forEach(panel => {
     panel.classList.toggle('active', panel.id === 'adminTab' + tabName.charAt(0).toUpperCase() + tabName.slice(1));
   });
+  // Selalu sinkronkan judul topbar dengan tab yang sedang aktif, baik saat
+  // diklik manual maupun saat tab dipulihkan dari cookie ketika dashboard
+  // dibuka ulang (sebelumnya judul topbar hanya ikut update lewat listener
+  // klik terpisah, jadi bisa "nyangkut" di label tab sebelumnya).
+  const topbarTitle = document.getElementById('adminTopbarTitle');
+  const label = activeBtn ? activeBtn.querySelector('.admin-tab-label') : null;
+  if(topbarTitle && label) topbarTitle.textContent = label.textContent;
   setCookie('adminLastTab', tabName, ADMIN_SESSION_HOURS);
 }
 function initAdminTabsOnce(){
