@@ -781,153 +781,23 @@ body {
 .pay-footer a:hover { text-decoration: underline; }
 
 /* ============================================================
-   PLAN SELECTOR — redesign premium (horizontal cards)
+   INFO AKSES PERMANEN (menggantikan plan selector lama)
    ============================================================ */
-.plan-section-label {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 12px;
-}
-.plan-selector {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-.plan-card {
-  position: relative;
-  background: var(--bg-elev);
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius-md);
-  padding: 16px 14px 18px;
-  cursor: pointer;
-  transition: border-color .2s, background .2s, box-shadow .2s, transform .15s;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0;
-  overflow: hidden;
-  text-align: left;
-  min-height: 120px;
-}
-.plan-card:hover {
-  border-color: var(--amber-dim);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px -8px rgba(0,0,0,0.4);
-}
-.plan-card.selected {
-  border-color: var(--amber);
-  background: linear-gradient(145deg, rgba(255,184,0,0.10) 0%, rgba(255,184,0,0.04) 100%);
-  box-shadow: 0 0 0 3px rgba(255,184,0,0.10), 0 8px 24px -8px rgba(255,184,0,0.20);
-  transform: translateY(-2px);
-}
-.plan-card.selected::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2.5px;
-  background: var(--amber-grad);
-}
-
-/* Icon bulat di atas */
-.plan-card-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--bg-elev2);
-  border: 1px solid var(--line-hi);
+.plan-permanent-note {
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
-  color: var(--text-dim);
-  flex-shrink: 0;
-  transition: background .2s, border-color .2s, color .2s;
-}
-.plan-card.selected .plan-card-icon {
-  background: var(--amber-glow);
-  border-color: var(--amber-dim);
-  color: var(--amber);
-}
-
-.plan-card-name {
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
-  font-size: 13px;
-  color: var(--text);
-  line-height: 1.2;
-  margin-bottom: 3px;
-}
-.plan-card.selected .plan-card-name { color: var(--amber-hi); }
-
-.plan-card-desc {
-  font-size: 10.5px;
-  color: var(--text-muted);
-  line-height: 1.45;
-  flex: 1;
-}
-
-.plan-card-price {
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 800;
-  font-size: 20px;
-  color: var(--text);
-  letter-spacing: -0.03em;
-  margin-top: 10px;
-  white-space: nowrap;
-  line-height: 1;
-}
-.plan-card.selected .plan-card-price { color: var(--amber-hi); }
-
-.plan-card-price-sub {
+  gap: 8px;
   font-family: 'Inter', sans-serif;
-  font-size: 10px;
-  color: var(--text-muted);
-  font-weight: 400;
-  letter-spacing: 0;
-  margin-top: 3px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--amber-hi, var(--amber));
+  background: linear-gradient(145deg, rgba(255,184,0,0.10) 0%, rgba(255,184,0,0.03) 100%);
+  border: 1px solid var(--amber-dim);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin-bottom: 16px;
 }
-
-/* Badge "TERBAIK" di pojok kanan atas */
-.plan-top-badge {
-  position: absolute;
-  top: 8px; right: 8px;
-  background: var(--amber-grad);
-  color: #000000;
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 8.5px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 3px 7px;
-  border-radius: 20px;
-  line-height: 1.4;
-  box-shadow: 0 2px 8px -2px rgba(255,184,0,0.5);
-}
-
-/* Checkmark pojok kiri bawah saat selected */
-.plan-card-check {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--amber);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transform: scale(0.5);
-  transition: opacity .2s, transform .25s cubic-bezier(.34,1.56,.64,1);
-}
-.plan-card.selected .plan-card-check {
-  opacity: 1;
-  transform: scale(1);
-}
+.plan-permanent-note svg { flex-shrink: 0; }
 
 /* ============================================================
    RESPONSIVE
@@ -991,40 +861,12 @@ body {
        ====================================================== -->
   <div class="pay-panel active" id="panel1">
 
-    <!-- Plan Selector -->
-    <div class="plan-section-label" id="planSectionLabel">Pilih Paket</div>
-    <div class="plan-selector" id="planSelector">
-
-      <!-- Kartu: 1 Bulan -->
-      <div class="plan-card selected" id="planCardMonthly" onclick="selectPlan('monthly')">
-        <div class="plan-card-icon">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        </div>
-        <div class="plan-card-name">1 Bulan</div>
-        <div class="plan-card-desc">Akses penuh selama 30 hari</div>
-        <div class="plan-card-price" id="planPriceMonthly">–</div>
-        <div class="plan-card-price-sub">30 hari akses</div>
-        <div class="plan-card-check">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        </div>
-      </div>
-
-      <!-- Kartu: Permanen -->
-      <div class="plan-card" id="planCardPermanent" onclick="selectPlan('permanent')">
-        <div class="plan-top-badge">TERBAIK</div>
-        <div class="plan-card-icon">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        </div>
-        <div class="plan-card-name">Permanen</div>
-        <div class="plan-card-desc">Bayar sekali, akses selamanya tanpa batas waktu</div>
-        <div class="plan-card-price" id="planPricePermanent">–</div>
-        <div class="plan-card-price-sub">sekali bayar</div>
-        <div class="plan-card-check">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        </div>
-      </div>
-
+    <!-- Info Akses Permanen -->
+    <div class="plan-permanent-note" id="planSectionLabel">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      Bayar sekali, akses selamanya — tidak ada biaya bulanan.
     </div>
+
 
     <!-- Order Summary -->
     <div class="order-card" id="orderCard">
@@ -1048,7 +890,7 @@ body {
           <span>Total Pembayaran</span>
           <span class="order-total-note" id="orderTotalNote">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            Akses 30 hari penuh
+            Bayar sekali, akses selamanya
           </span>
         </div>
         <div class="order-total-value" id="priceChip">Memuat...</div>
@@ -1245,7 +1087,6 @@ let ctx = {
 };
 let selectedProofFile = null;
 let selectedMethod = ''; // 'qris' atau 'dana'
-let selectedPlan = 'monthly'; // 'monthly' | 'permanent'
 let pollTimer = null;
 let submissionLocked = false; // true kalau sudah ada pengajuan (pending/approved) — cegah kirim bukti dobel
 
@@ -1291,10 +1132,9 @@ function setPanel2Manual(){
   showStatus(2, 'pending', 'Bukti transfer kamu sudah diterima. Admin akan meninjau dan mengaktifkan akses secara manual — biasanya tidak lama.');
 }
 function goToManualPendingStep(methodLabel){
-  const activePrice = selectedPlan === 'monthly' ? ctx.price : ctx.permanentPrice;
   document.getElementById('p2FolderName').textContent = ctx.folderName || 'Folder VIP';
   document.getElementById('p2Method').textContent = methodLabel || (selectedMethod === 'dana' ? 'Transfer Manual (DANA)' : 'Transfer Manual (QRIS)');
-  document.getElementById('p2Price').textContent = fmt(activePrice);
+  document.getElementById('p2Price').textContent = fmt(ctx.price);
   setPanel2Manual();
   goStep(2);
 }
@@ -1406,22 +1246,13 @@ async function init(){
     return;
   }
 
-  // Ambil harga ASLI dari database
+  // Ambil harga ASLI dari database — sekarang dipakai langsung sebagai
+  // harga akses permanen (fitur paket bulanan sudah dihapus).
   ctx.price = await resolveTruePrice(ctx.folderId);
-  // Harga Permanen: selalu 2× harga monthly (berlaku untuk folder individual maupun Akses Semua Folder)
-  ctx.permanentPrice = ctx.price * 2;
 
-  // Tampilkan harga di plan selector
-  document.getElementById('planPriceMonthly').textContent = fmt(ctx.price);
-  document.getElementById('planPricePermanent').textContent = fmt(ctx.permanentPrice);
-
-  // Semua folder (termasuk folder biasa) bisa pilih Permanen atau 1 Bulan
-  // (tidak ada penyembunyian kartu Permanen)
-
-  // Sembunyikan plan selector untuk folder gratis
+  // Sembunyikan info paket untuk folder gratis
   if(ctx.price === 0){
     document.getElementById('planSectionLabel').style.display = 'none';
-    document.getElementById('planSelector').style.display = 'none';
   }
 
   // Tampilkan ringkasan pesanan
@@ -1446,9 +1277,8 @@ async function init(){
   document.getElementById('danaAmountHint').textContent = fmt(ctx.price);
   document.getElementById('danaNumberText').textContent = CFG.danaNumber;
 
-  // Default: QRIS + Langganan 1 Bulan
+  // Default: QRIS
   selectMethod('qris');
-  selectPlan('monthly');
 
   // Cek apakah sudah ada pembayaran sebelumnya
   await checkExistingPayment();
@@ -1469,24 +1299,8 @@ function selectMethod(method){
 }
 
 /* ============================================================
-   PILIH PAKET (1 Bulan / Permanen)
+   PILIH PAKET — dihapus. Sistem sekarang permanen saja (sekali bayar).
    ============================================================ */
-function selectPlan(plan){
-  // Semua folder boleh pilih Permanen atau 1 Bulan
-  selectedPlan = plan;
-  document.getElementById('planCardMonthly').classList.toggle('selected', plan === 'monthly');
-  document.getElementById('planCardPermanent').classList.toggle('selected', plan === 'permanent');
-
-  const activePrice = plan === 'monthly' ? ctx.price : ctx.permanentPrice;
-  document.getElementById('priceChip').textContent = fmt(activePrice);
-  document.getElementById('danaAmountHint').textContent = fmt(activePrice);
-
-  const noteEl = document.getElementById('orderTotalNote');
-  if(noteEl){
-    noteEl.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-      ${plan === 'monthly' ? 'Akses 30 hari penuh' : 'Bayar sekali, akses selamanya'}`;
-  }
-}
 
 // Kompatibilitas: selectQrisCard(true) dipanggil di beberapa tempat
 // (init, checkExistingPayment) untuk membuka default QRIS.
@@ -1573,16 +1387,14 @@ document.getElementById('btnAjukanAkses').addEventListener('click', async () => 
 
   btn.innerHTML = `<span class="spin"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></span> Mengirim...`;
 
-  const activePrice = selectedPlan === 'monthly' ? ctx.price : ctx.permanentPrice;
-  const planLabel   = selectedPlan === 'monthly' ? '1 Bulan' : 'Permanen';
-  const methodLabel = (selectedMethod === 'dana' ? 'DANA' : 'QRIS') + ' · ' + planLabel;
+  const methodLabel = (selectedMethod === 'dana' ? 'DANA' : 'QRIS') + ' · Permanen';
 
   const entry = {
     key,
     name:         ctx.visitorName,
     folder_id:    ctx.folderId,
     folder_name:  ctx.folderName,
-    price:        activePrice,
+    price:        ctx.price,
     status:       'pending',
     proof_url:    proofUrl,
     method:       methodLabel,

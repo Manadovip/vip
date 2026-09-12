@@ -1648,20 +1648,10 @@ async function renderAdminRequests(){
       : `<div class="rproof rproof-missing">Tanpa foto</div>`;
 
     if(e.status === 'pending'){
-      const planDays = getPlanDefaultDays(e.method);
-      const planBadge = e.method
-        ? `<span class="plan-badge-admin">${e.method.includes('1 Bulan') ? '📅 1 Bulan' : e.method.includes('Permanen') ? '♾️ Permanen' : escapeHtml(e.method)}</span>`
-        : '';
       const actionsHtml = `<div class="ractions ractions-pending">
-            <div class="ractions-meta">
-              ${planBadge}
-              ${durationSelectHtml('dur-' + escapeHtml(e.key), planDays)}
-            </div>
-            <div class="ractions-btns">
-              <button class="rbtn approve" data-action="approve" data-key="${escapeHtml(e.key)}">✓ Setujui</button>
-              <button class="rbtn reject" data-action="reject" data-key="${escapeHtml(e.key)}">✕ Tolak</button>
-              <button class="rbtn delete icon-only" data-action="delete" data-key="${escapeHtml(e.key)}" title="Hapus" aria-label="Hapus">🗑</button>
-            </div>
+            <button class="rbtn approve" data-action="approve" data-key="${escapeHtml(e.key)}">✓ Setujui</button>
+            <button class="rbtn reject" data-action="reject" data-key="${escapeHtml(e.key)}">✕ Tolak</button>
+            <button class="rbtn delete icon-only" data-action="delete" data-key="${escapeHtml(e.key)}" title="Hapus" aria-label="Hapus">🗑</button>
            </div>`;
       return `
         <div class="request-item pending">
@@ -1729,24 +1719,9 @@ const DURATION_OPTIONS = [
   { days: 60, label: '60 hari'  },
   { days: 90, label: '90 hari'  },
 ];
-function durationSelectHtml(name, defaultDays = 0){
-  return `<select class="duration-select" name="${name}">
-    ${DURATION_OPTIONS.map(o =>
-      `<option value="${o.days}"${o.days === defaultDays ? ' selected' : ''}>${o.label}</option>`
-    ).join('')}
-  </select>`;
-}
 function computeExpiresAt(days){
   if(!days || days <= 0) return null;
   return Date.now() + days * 24 * 60 * 60 * 1000;
-}
-
-// Baca plan default dari label method (misal "QRIS · 1 Bulan" → 30 hari)
-function getPlanDefaultDays(method){
-  if(!method) return 0;
-  if(method.includes('1 Bulan')) return 30;
-  if(method.includes('Permanen')) return 0;
-  return 0;
 }
 
 async function updateRequestStatus(key, status, expiresAt = null){
@@ -2455,19 +2430,13 @@ async function renderFolders(folders){
     const isPending = !!(allAccessEntry && allAccessEntry.status === 'pending');
     const btnLabel = isPending ? '⏳ Sedang di proses...' : 'Bayar Sekarang';
     const btnClass = isPending ? 'notice-pay-btn pending' : 'notice-pay-btn';
-    const permanentPrice = allAccessPrice * 2;
     const fmtRp = n => 'Rp' + Number(n).toLocaleString('id-ID');
     allAccessNoticeText.innerHTML = `<span class="notice-inner">
-        <span class="notice-description">Buka <strong>semua ${paidFolderCount} folder</strong> berbayar sekaligus &mdash; pilih paket:</span>
-        <span class="notice-plan-chips">
-          <span class="notice-plan-chip">
-            <span class="notice-plan-chip-label">🗓️ 1 Bulan</span>
-            <span class="notice-plan-chip-price">${fmtRp(allAccessPrice)}</span>
-            <span class="notice-plan-chip-desc">Akses 30 hari penuh</span>
-          </span>
+        <span class="notice-description">Buka <strong>semua ${paidFolderCount} folder</strong> berbayar sekaligus, permanen:</span>
+        <span class="notice-plan-chips notice-plan-chips-single">
           <span class="notice-plan-chip notice-plan-chip-perm">
-            <span class="notice-plan-chip-label">♾️ Permanen <span class="notice-plan-chip-perm-badge">TERBAIK</span></span>
-            <span class="notice-plan-chip-price">${fmtRp(permanentPrice)}</span>
+            <span class="notice-plan-chip-label">♾️ Permanen</span>
+            <span class="notice-plan-chip-price">${fmtRp(allAccessPrice)}</span>
             <span class="notice-plan-chip-desc">Bayar sekali, selamanya</span>
           </span>
         </span>
@@ -2758,18 +2727,12 @@ function renderVideos(files, lockInfo){
     const btnClass = isPending ? 'notice-pay-btn pending' : 'notice-pay-btn';
     const basePrice = folderPrice(lockInfo.folderId);
     const fmtRp = n => 'Rp' + Number(n).toLocaleString('id-ID');
-    const permanentFolderPrice = basePrice * 2;
     folderPaymentNoticeText.innerHTML = `<span class="notice-inner">
-        <span class="notice-description">Buka <strong>semua ${files.length} video</strong> di folder ini &mdash; pilih paket:</span>
-        <span class="notice-plan-chips">
-          <span class="notice-plan-chip">
-            <span class="notice-plan-chip-label">\uD83D\uDDD3\uFE0F 1 Bulan</span>
-            <span class="notice-plan-chip-price">${fmtRp(basePrice)}</span>
-            <span class="notice-plan-chip-desc">Akses 30 hari penuh</span>
-          </span>
+        <span class="notice-description">Buka <strong>semua ${files.length} video</strong> di folder ini, permanen:</span>
+        <span class="notice-plan-chips notice-plan-chips-single">
           <span class="notice-plan-chip notice-plan-chip-perm">
-            <span class="notice-plan-chip-label">\u267E\uFE0F Permanen <span class="notice-plan-chip-perm-badge">TERBAIK</span></span>
-            <span class="notice-plan-chip-price">${fmtRp(permanentFolderPrice)}</span>
+            <span class="notice-plan-chip-label">♾️ Permanen</span>
+            <span class="notice-plan-chip-price">${fmtRp(basePrice)}</span>
             <span class="notice-plan-chip-desc">Bayar sekali, selamanya</span>
           </span>
         </span>

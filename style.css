@@ -1538,19 +1538,7 @@
     display: block;
   }
   /* Plan badge di admin request list */
-  .plan-badge-admin {
-    display: inline-flex;
-    align-items: center;
-    flex-shrink: 0;
-    font-size: 11px;
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700;
-    padding: 3px 10px;
-    border-radius: 999px;
-    background: rgba(255,184,0,0.12);
-    color: var(--amber);
-    border: 1px solid rgba(255,184,0,0.22);
-  }
+
 
 
   .duration-select {
@@ -1878,22 +1866,6 @@
     align-items:center;
   }
   .request-item .ractions-pending{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    width:100%;
-  }
-  .ractions-meta{
-    display:flex;
-    align-items:center;
-    flex-wrap:wrap;
-    gap:8px;
-  }
-  .ractions-meta .duration-select{
-    flex:1;
-    min-width:90px;
-  }
-  .ractions-btns{
     display:flex;
     gap:8px;
     width:100%;
