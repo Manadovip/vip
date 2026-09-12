@@ -2209,18 +2209,26 @@
     margin-bottom:20px;
     box-shadow:0 10px 26px -18px rgba(0,0,0,0.6);
     max-width:760px;
+    transition:border-color 0.2s ease;
   }
   .admin-section-header{
     display:flex;
+    flex-wrap:wrap;
     align-items:center;
     justify-content:space-between;
-    gap:12px;
-    margin-bottom:8px;
+    gap:8px 12px;
+    margin-bottom:12px;
   }
   .admin-section-header h2{
     font-family:'Space Grotesk', sans-serif;
     font-size:18px;
     margin:0;
+    flex:1 1 auto;
+    min-width:0;
+    overflow-wrap:break-word;
+  }
+  .admin-section-header .pbtn-refresh{
+    margin-left:auto;
   }
   .admin-section .price-item.all-access-item{
     border-color:var(--amber-dim);
@@ -2231,6 +2239,7 @@
     font-size:13px;
     margin-bottom:16px;
   }
+  .admin-block-spacer{ margin-bottom:16px; }
   .admin-list{
     display:flex;
     flex-direction:column;
