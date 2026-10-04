@@ -1496,7 +1496,7 @@ async function uploadProof(file, slug){
   try{
     const ext  = file.name.split('.').pop() || 'jpg';
     const path = slug + '_' + Date.now() + '.' + ext;
-    const { data, error } = await sb.storage.from(CFG.proofBucket).upload(path, file, { upsert: true });
+    const { data, error } = await sb.storage.from(CFG.proofBucket).upload(path, file, { upsert: false, cacheControl: '3600' });
     if(error) return null;
     const { data: pub } = sb.storage.from(CFG.proofBucket).getPublicUrl(path);
     return pub?.publicUrl || null;
