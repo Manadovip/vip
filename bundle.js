@@ -105,7 +105,7 @@ const SUPABASE_URL = "https://jyxzqihbobkqglgkqvkr.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_tIPvDI_7RMFJZx1_ZftHWA_45yf6jfw";
 const PROOF_BUCKET = 'payment-proofs';
 const HEARTBEAT_SECONDS = 15;
-const ONLINE_TIMEOUT_SECONDS = 60;
+const ONLINE_TIMEOUT_SECONDS = 1800; // dianggap "aktif" kalau terakhir terlihat <= 30 menit (tanpa polling)
 // PENTING: hash password admin TIDAK lagi disimpan di sini.
 // Verifikasi password sekarang dilakukan di server (Supabase RPC),
 // supaya orang yang buka "View Source" tidak bisa lihat/pakai hash-nya
@@ -222,8 +222,12 @@ function getSessionId(){
   return sid;
 }
 
-async function sendHeartbeat(name){
+let lastHeartbeatAt = 0;
+async function sendHeartbeat(name, force){
   if(!dbReady()) return;
+  // Hemat egress: maksimal 1x per 5 menit per browser (kecuali dipaksa saat login).
+  if(!force && Date.now() - lastHeartbeatAt < 5 * 60 * 1000) return;
+  lastHeartbeatAt = Date.now();
   try{
     const { error } = await sb.from('active_players').upsert({
       session_id: getSessionId(),
@@ -271,9 +275,7 @@ let heartbeatInterval = null;
 let heartbeatName = null;
 function startHeartbeat(name){
   heartbeatName = name;
-  sendHeartbeat(name);
-  if(heartbeatInterval) clearInterval(heartbeatInterval);
-  heartbeatInterval = setInterval(() => sendHeartbeat(name), HEARTBEAT_SECONDS * 1000);
+  sendHeartbeat(name, true);
 }
 
 // Kalau tab disembunyikan (ganti aplikasi, kunci layar, minimize), hentikan
@@ -282,12 +284,8 @@ function startHeartbeat(name){
 // padahal orangnya sudah tidak sedang melihat halaman ini.
 document.addEventListener('visibilitychange', () => {
   if(!heartbeatName) return;
-  if(document.visibilityState === 'hidden'){
-    if(heartbeatInterval){ clearInterval(heartbeatInterval); heartbeatInterval = null; }
-  } else if(document.visibilityState === 'visible'){
-    sendHeartbeat(heartbeatName);
-    if(heartbeatInterval) clearInterval(heartbeatInterval);
-    heartbeatInterval = setInterval(() => sendHeartbeat(heartbeatName), HEARTBEAT_SECONDS * 1000);
+  if(document.visibilityState === 'visible'){
+    sendHeartbeat(heartbeatName); // otomatis dibatasi 1x per 5 menit
   }
 });
 
@@ -296,21 +294,7 @@ document.addEventListener('visibilitychange', () => {
 // status di dashboard admin lebih instan & akurat. Pakai fetch REST manual
 // dengan keepalive supaya requestnya tidak dibatalkan browser saat halaman
 // sedang ditutup (client supabase-js biasa tidak menjamin ini selesai terkirim).
-function removeActivePlayerBeacon(){
-  if(!dbReady()) return;
-  try{
-    const url = `${SUPABASE_URL}/rest/v1/active_players?session_id=eq.${encodeURIComponent(getSessionId())}`;
-    fetch(url, {
-      method: 'DELETE',
-      headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-      },
-      keepalive: true
-    });
-  }catch(e){}
-}
-window.addEventListener('pagehide', removeActivePlayerBeacon);
+
 
 async function fetchPaymentRequests(){
   if(!dbReady()) return null;
@@ -536,8 +520,7 @@ async function checkForceLogoutAndApply(){
 let forceLogoutWatchInterval = null;
 function startForceLogoutWatch(){
   if(forceLogoutWatchInterval) clearInterval(forceLogoutWatchInterval);
-  checkForceLogoutAndApply();
-  forceLogoutWatchInterval = setInterval(checkForceLogoutAndApply, HEARTBEAT_SECONDS * 1000);
+  checkForceLogoutAndApply(); // cek sekali saat halaman dibuka (tanpa polling)
 }
 
 let folderPriceCache = null;
@@ -854,10 +837,6 @@ function showUserBadge(name){
 
   refreshNotifBadge();
   updateVipBadge();
-  if(notifPollInterval) clearInterval(notifPollInterval);
-  notifPollInterval = setInterval(refreshNotifBadge, 20000);
-  if(vipBadgePollInterval) clearInterval(vipBadgePollInterval);
-  vipBadgePollInterval = setInterval(updateVipBadge, 20000);
 }
 
 function hideUserBadge(){
@@ -2033,7 +2012,7 @@ function openAdminDashboard(){
   renderAdminTestimonials();
   renderAssetVersionStatus();
   if(adminPollInterval) clearInterval(adminPollInterval);
-  adminPollInterval = setInterval(() => { renderAdminDashboard(); renderAdminRequests(); }, 5000);
+  adminPollInterval = setInterval(() => { if(document.hidden) return; renderAdminDashboard(); renderAdminRequests(); }, 30000);
 }
 
 // ===== Tab Notifikasi: kirim pemberitahuan baru & kelola riwayat =====
@@ -2952,21 +2931,6 @@ function isFolderNew(folder){
   return (Date.now() - folder._newBadgeTime) < NEW_BADGE_WINDOW_MS;
 }
 
-async function fetchVisitorAccountCount(){
-  if(!dbReady()) return null;
-  try{
-    const { data, error } = await sb.rpc('get_visitor_account_count');
-    if(error){
-      console.warn('[fetchVisitorAccountCount] Supabase error:', error.message);
-      return null;
-    }
-    return typeof data === 'number' ? data : null;
-  }catch(e){
-    console.warn('[fetchVisitorAccountCount] Exception:', e);
-    return null;
-  }
-}
-
 async function loadCurrentFolder(){
   syncHistoryState();
   const current = path[path.length - 1];
@@ -3093,8 +3057,7 @@ async function loadCurrentFolder(){
     const warnSuffix = failedSources.length ? ` · ⚠️ ${failedSources.length} sumber gagal dimuat` : '';
     if(folders.length > 0){
       const visitorName = getCookie('visitorName');
-      const accountCount = await fetchVisitorAccountCount();
-      const activeUsersText = accountCount !== null ? `${accountCount} Pengguna Aktif` : `${folders.length} folder tersedia`;
+      const activeUsersText = `${folders.length} folder tersedia`;
       statusText.textContent = (visitorName
         ? `Halo, ${visitorName} 👋 · ${activeUsersText}`
         : activeUsersText) + warnSuffix;

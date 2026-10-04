@@ -1432,7 +1432,7 @@ document.getElementById('btnCekStatus').addEventListener('click', async () => {
    ============================================================ */
 function startPoll(){
   stopPoll();
-  pollTimer = setInterval(checkAndAdvance, 8000);
+  pollTimer = setInterval(() => { if(!document.hidden) checkAndAdvance(); }, 20000);
 }
 function stopPoll(){
   if(pollTimer){ clearInterval(pollTimer); pollTimer = null; }
