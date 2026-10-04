@@ -25,7 +25,7 @@ const DRIVE_SOURCES = [
 // URL proxy yang menyimpan API key Google Drive asli di server (lihat
 // drive-proxy.php). Semua pengambilan daftar folder/video lewat sini,
 // bukan langsung ke googleapis.com dari browser.
-const DRIVE_PROXY_URL = "https://sfoafmywxavctxmdzhhv.supabase.co/functions/v1/drive-proxy";
+const DRIVE_PROXY_URL = "https://jyxzqihbobkqglgkqvkr.supabase.co/functions/v1/drive-proxy";
 
 // ===== AKSES LANGSUNG KE GOOGLE DRIVE (tanpa Supabase) =====
 // Video & daftar folder diambil LANGSUNG dari Google Drive, jadi tetap jalan
@@ -101,8 +101,8 @@ function validDriveSources(){
   );
 }
 
-const SUPABASE_URL = "https://sfoafmywxavctxmdzhhv.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_YoPSvHQp0JLMOOb_mZcIDg_cz2vQ0A3";
+const SUPABASE_URL = "https://jyxzqihbobkqglgkqvkr.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_tIPvDI_7RMFJZx1_ZftHWA_45yf6jfw";
 const PROOF_BUCKET = 'payment-proofs';
 const HEARTBEAT_SECONDS = 15;
 const ONLINE_TIMEOUT_SECONDS = 60;
@@ -138,7 +138,7 @@ const BANK_TRANSFER_INFO = 'Scan QR di atas menggunakan aplikasi m-banking atau 
 // Notifikasi Telegram sekarang lewat proxy server-side (telegram-notify-proxy.php).
 // Token bot TIDAK ADA di client-side lagi — kalau URL proxy-nya beda domain,
 // ganti path di bawah jadi URL lengkap, misal 'https://situskamu.com/telegram-notify-proxy.php'.
-const TELEGRAM_PROXY_URL = 'https://sfoafmywxavctxmdzhhv.supabase.co/functions/v1/telegram-notify';
+const TELEGRAM_PROXY_URL = 'https://jyxzqihbobkqglgkqvkr.supabase.co/functions/v1/telegram-notify';
 
 // Kirim notifikasi ke Telegram setiap ada bukti transfer baru masuk,
 // lengkap dengan foto buktinya, supaya admin bisa langsung cek & approve
