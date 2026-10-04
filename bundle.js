@@ -26,6 +26,61 @@ const DRIVE_SOURCES = [
 // drive-proxy.php). Semua pengambilan daftar folder/video lewat sini,
 // bukan langsung ke googleapis.com dari browser.
 const DRIVE_PROXY_URL = "https://sfoafmywxavctxmdzhhv.supabase.co/functions/v1/drive-proxy";
+
+// ===== AKSES LANGSUNG KE GOOGLE DRIVE (tanpa Supabase) =====
+// Video & daftar folder diambil LANGSUNG dari Google Drive, jadi tetap jalan
+// walau kuota egress Supabase habis. DRIVE_PROXY_URL di atas cuma dipakai
+// sebagai cadangan kalau akses langsung gagal.
+// WAJIB: di Google Cloud Console, batasi tiap key ke (1) HTTP referrer =
+// domain situs ini, dan (2) Google Drive API saja. Key di sini kelihatan publik.
+const DRIVE_DIRECT_KEYS = {
+  a: "AIzaSyBxmHrrGOA_TseA3OtthWtXkjsda_vVtfQ",
+  b: "AIzaSyB8MY-5lLPOirCFvXO8qEwHgY5zntv0m4c"
+};
+function driveDirectReady(source){
+  const k = DRIVE_DIRECT_KEYS[source];
+  return !!k && !String(k).startsWith('GANTI');
+}
+function driveStreamUrlDirect(source, fileId){
+  return `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}?alt=media&key=${encodeURIComponent(DRIVE_DIRECT_KEYS[source])}`;
+}
+function driveStreamUrlProxy(source, fileId, folderId){
+  const visitorName = getCookie('visitorName') || '';
+  return `${DRIVE_PROXY_URL}?source=${encodeURIComponent(source)}&fileId=${encodeURIComponent(fileId)}&mode=stream&name=${encodeURIComponent(visitorName)}&folderId=${encodeURIComponent(folderId || '')}`;
+}
+function driveListUrlDirect(source, parentId, mode){
+  let q, fields = "files(id,name,mimeType,hasThumbnail,thumbnailLink,createdTime,modifiedTime,size)";
+  let pageSize = 1000, orderBy = "folder,name";
+  if(mode === 'folders'){
+    q = `'${parentId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+  } else if(mode === 'latest'){
+    q = `'${parentId}' in parents and mimeType contains 'video/' and trashed=false`;
+    fields = "files(id,name,createdTime)"; pageSize = 1; orderBy = "createdTime desc";
+  } else {
+    q = `'${parentId}' in parents and trashed=false`;
+  }
+  const u = new URL("https://www.googleapis.com/drive/v3/files");
+  u.searchParams.set("key", DRIVE_DIRECT_KEYS[source]);
+  u.searchParams.set("q", q);
+  u.searchParams.set("fields", fields);
+  u.searchParams.set("pageSize", String(pageSize));
+  u.searchParams.set("orderBy", orderBy);
+  return u.toString();
+}
+// Ambil daftar dari Drive langsung; kalau gagal/ditolak, coba lewat proxy Supabase.
+async function driveListFetch(source, parentId, mode, fetchOpts){
+  if(driveDirectReady(source)){
+    try{
+      const res = await fetch(driveListUrlDirect(source, parentId, mode), fetchOpts);
+      if(res.ok) return await res.json();
+    }catch(e){
+      if(e && e.name === 'AbortError') throw e;
+    }
+  }
+  const url = `${DRIVE_PROXY_URL}?source=${encodeURIComponent(source)}&parentId=${encodeURIComponent(parentId)}&mode=${mode}`;
+  const res = await fetch(url, fetchOpts);
+  return await res.json();
+}
 // Label ini muncul sebagai judul halaman utama & label "pulang" di breadcrumb.
 // Ganti teksnya di sini kapan saja tanpa perlu cari-cari di tempat lain.
 const HOME_LABEL = "Koleksi VIP";
@@ -1880,10 +1935,8 @@ async function fetchAllDriveFoldersRecursive(roots){
     const { id: parentId, source } = queue.shift();
     if(seen.has(parentId)) continue;
     seen.add(parentId);
-    const url = `${DRIVE_PROXY_URL}?source=${encodeURIComponent(source)}&parentId=${encodeURIComponent(parentId)}&mode=folders`;
     try{
-      const res = await fetch(url);
-      const data = await res.json();
+      const data = await driveListFetch(source, parentId, 'folders');
       const folders = data.files || [];
       folders.forEach(f => {
         result.push({ ...f, source });
@@ -2602,6 +2655,14 @@ modalVideo.addEventListener('playing', () => modalLoading.classList.add('hidden'
 modalVideo.addEventListener('canplay', () => modalLoading.classList.add('hidden'));
 
 modalVideo.addEventListener('error', () => {
+  // Akses langsung ke Drive gagal -> coba sekali lewat proxy Supabase.
+  if(fullscreenModal.classList.contains('active') && !modalVideo.dataset.triedProxy && modalVideo.dataset.fileId && driveDirectReady(modalVideo.dataset.source)){
+    modalVideo.dataset.triedProxy = '1';
+    modalVideo.src = driveStreamUrlProxy(modalVideo.dataset.source, modalVideo.dataset.fileId, modalVideo.dataset.folderId);
+    modalVideo.load();
+    modalVideo.play().catch(() => {});
+    return;
+  }
   modalLoading.classList.add('hidden');
   const errBox = document.getElementById('modalStreamError');
   if(errBox) errBox.style.display = 'flex';
@@ -2672,8 +2733,13 @@ function openVideoFullscreen(fileId, fileName, source, folderId) {
   modalVideo.style.display = 'block';
   videoControls.style.display = 'block';
   modalLoading.classList.remove('hidden');
-  const visitorName = getCookie('visitorName') || '';
-  modalVideo.src = `${DRIVE_PROXY_URL}?source=${encodeURIComponent(source)}&fileId=${encodeURIComponent(fileId)}&mode=stream&name=${encodeURIComponent(visitorName)}&folderId=${encodeURIComponent(folderId || '')}`;
+  modalVideo.dataset.source = source;
+  modalVideo.dataset.fileId = fileId;
+  modalVideo.dataset.folderId = folderId || '';
+  modalVideo.dataset.triedProxy = '';
+  modalVideo.src = driveDirectReady(source)
+    ? driveStreamUrlDirect(source, fileId)
+    : driveStreamUrlProxy(source, fileId, folderId);
   modalVideo.load();
   modalVideo.play().catch(() => {
     // Autoplay diblokir browser -- biarin aja, biar user tap tombol play
@@ -2837,13 +2903,11 @@ function showSkeletons(){
 // Lewat drive-proxy.php (bukan langsung ke googleapis.com) supaya API key
 // Google Drive tidak pernah kelihatan di browser pengunjung.
 async function fetchDriveChildren(parentId, source, timeoutMs = 10000){
-  const url = `${DRIVE_PROXY_URL}?source=${encodeURIComponent(source)}&parentId=${encodeURIComponent(parentId)}&mode=all`;
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try{
-    const res = await fetch(url, { signal: controller.signal, cache: 'no-store' });
-    return await res.json();
+    return await driveListFetch(source, parentId, 'all', { signal: controller.signal, cache: 'no-store' });
   }catch(e){
     if(e.name === 'AbortError'){
       return { error: { message: 'Waktu tunggu habis, server tidak merespons.' } };
@@ -2861,9 +2925,7 @@ async function fetchDriveChildren(parentId, source, timeoutMs = 10000){
 // otomatis turun ke bawah.
 async function fetchLatestVideoTime(folderId, source){
   try{
-    const url = `${DRIVE_PROXY_URL}?source=${encodeURIComponent(source)}&parentId=${encodeURIComponent(folderId)}&mode=latest`;
-    const res = await fetch(url, { cache: 'no-store' });
-    const data = await res.json();
+    const data = await driveListFetch(source, folderId, 'latest', { cache: 'no-store' });
     const f = data.files && data.files[0];
     return f && f.createdTime ? new Date(f.createdTime).getTime() : 0;
   }catch(e){
